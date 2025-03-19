@@ -1,0 +1,99 @@
+.container {
+    background-color: #F5F7FA;
+    padding: 20px;
+  }
+  
+
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2C3E50;
+    margin-bottom: 8px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+    color: #6C7A89;
+    margin-bottom: 4px;
+  }
+  
+  .sectionsContainer {
+    padding: 16px;
+  }
+  
+  .sectionItem {
+    background-color: #FFFFFF;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sectionContent {
+    display: flex;
+    align-items: center;
+    cursor: pointer; /* Cambia el cursor al pasar sobre la sección */
+  }
+  
+  .iconContainer {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background-color: #EBF3FF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+  }
+  
+  .textContainer {
+    flex: 1;
+  }
+  
+  .sectionTitle {
+    font-size: 17px;
+    font-weight: 600;
+    color: #2C3E50;
+    margin-bottom: 4px;
+  }
+  
+  .sectionDescription {
+    font-size: 14px;
+    color: #6C7A89;
+  }
+  
+  .arrowIcon {
+    font-size: 24px;
+    color: #6C7A89;
+    cursor: pointer; /* Cambia el cursor al pasar sobre la flecha */
+    transition: transform 0.3s ease; /* Animación de rotación */
+  }
+  
+  .arrowIcon.expanded {
+    transform: rotate(90deg); /* Rota la flecha cuando la sección está expandida */
+  }
+  
+  .sectionContentExpand {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #E6E9ED;
+  }
+  
+  .docContainer {
+    padding: 16px;
+    background-color: #F5F7FA;
+    border-radius: 8px;
+  }
+  
+  .docTitle {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2C3E50;
+    margin-bottom: 8px;
+  }
+  
+  .docText {
+    font-size: 14px;
+    color: #6C7A89;
+  }
