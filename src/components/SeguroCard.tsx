@@ -1,4 +1,3 @@
-// components/SeguroCard.tsx
 import React from 'react';
 import Switch from 'react-switch';
 import { FaLock, FaLockOpen } from 'react-icons/fa';
@@ -13,6 +12,7 @@ const SeguroCard: React.FC<SeguroCardProps> = ({ seguro, onToggleSeguro, modo })
   // Consideramos activo si el string es exactamente "activo" (sin mayúsculas)
   const isActivo = seguro.toLowerCase() === 'activo';
   const esManual = modo.toLowerCase() === 'manual';
+  void esManual; // Dummy usage para evitar error TS6133
 
   return (
     <div className="bg-white rounded-xl p-4 shadow-md mb-4 transition-transform hover:-translate-y-1">

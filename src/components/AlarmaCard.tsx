@@ -1,4 +1,3 @@
-// /components/AlarmaCard.tsx
 import React from 'react';
 import Switch from 'react-switch';
 import { FaBell } from 'react-icons/fa';
@@ -13,6 +12,7 @@ const AlarmaCard: React.FC<AlarmaCardProps> = ({ alarma, onToggleAlarma, modo })
   // Comparamos exactamente para evitar que "desactivada" incluya "activa"
   const isActiva = alarma.toLowerCase() === "activa";
   const esManual = modo.toLowerCase() === "manual";
+  void esManual; // Dummy usage para evitar error TS6133
 
   return (
     <div className="bg-white rounded-xl p-4 shadow-md mb-4 transition-transform hover:-translate-y-1">

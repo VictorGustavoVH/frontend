@@ -1,4 +1,3 @@
-// /components/SensoresCard.tsx
 import React from 'react';
 import { 
   FaThermometerHalf, 
@@ -8,6 +7,8 @@ import {
   FaMoon, 
   FaQuestion 
 } from 'react-icons/fa';
+
+void FaThermometerHalf; // Dummy usage para evitar error TS6133
 
 interface SensoresCardProps {
   temperatura: string;   // e.g. '20'
