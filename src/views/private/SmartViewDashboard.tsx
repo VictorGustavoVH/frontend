@@ -23,8 +23,12 @@ interface IDevice {
   seguro: string;         // "activo" / "desactivo"
 }
 
-// Conectar al servidor de websockets (ajusta la URL según corresponda)
-const socket = io("http://localhost:5000");
+// Se obtiene la URL del backend desde la variable de entorno VITE_API_URL.
+// Si no está definida, se usa "http://localhost:5000" (útil en desarrollo).
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+// Conectar al servidor de websockets usando la URL definida
+const socket = io(backendUrl);
 
 const SmartViewDashboard: React.FC = () => {
   const [device, setDevice] = useState<IDevice | null>(null);
@@ -43,6 +47,7 @@ const SmartViewDashboard: React.FC = () => {
       setError("");
     });
 
+    // Solicita la información del dispositivo con deviceId "ventana1"
     socket.emit("getDevice", { deviceId: "ventana1" }, (response: IDevice) => {
       if (response) {
         setDevice(response);
@@ -54,16 +59,18 @@ const SmartViewDashboard: React.FC = () => {
       }
     });
 
+    // Limpieza de eventos al desmontar el componente
     return () => {
       socket.off("connect");
       socket.off("deviceUpdate");
     };
   }, []);
 
+  // Función para enviar comandos al backend
   const sendCommand = async (command: string) => {
     if (!device) return;
     try {
-      const res = await fetch(`http://localhost:5000/products/devices/${device.deviceId}/command`, {
+      const res = await fetch(`${backendUrl}/products/devices/${device.deviceId}/command`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command }),
@@ -128,11 +135,8 @@ const SmartViewDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-blue-50 flex flex-col">
-      {/* Header */}
-     <Header />
-      {/* Main Content */}
+      <Header />
       <main className="flex-grow container mx-auto px-4 py-6">
-        {/* Primera sección: Modo y Ventana */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ModoCard modo={modoVal} onToggleModo={handleToggleModo} />
           <VentanaCard
@@ -142,8 +146,6 @@ const SmartViewDashboard: React.FC = () => {
             modo={modoVal}
           />
         </div>
-
-        {/* Segunda sección: Seguro y Alarma */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <SeguroCard
             seguro={seguroVal}
@@ -156,8 +158,6 @@ const SmartViewDashboard: React.FC = () => {
             modo={modoVal}
           />
         </div>
-
-        {/* Tercera sección: Sensores */}
         <div className="mt-8">
           <SensoresCard
             temperatura={tempVal}
@@ -166,10 +166,7 @@ const SmartViewDashboard: React.FC = () => {
           />
         </div>
       </main>
-
-      
-      <Footer/> 
-
+      <Footer />
     </div>
   );
 };
