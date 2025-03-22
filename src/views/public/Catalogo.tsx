@@ -4,6 +4,7 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getProducts } from '../../api/DevTreeAPI';
 
+// Solo definimos las props que necesitamos en el catálogo
 interface Product {
   name: string;
   description: string;
@@ -11,9 +12,9 @@ interface Product {
   image?: string;
   brand?: string;
   price?: number;
-  stock?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  // stock?: number;         // lo quitamos
+  // createdAt?: string;    // lo quitamos
+  // updatedAt?: string;    // lo quitamos
 }
 
 const Catalogo: React.FC = () => {
@@ -29,7 +30,7 @@ const Catalogo: React.FC = () => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const data = await getProducts(); 
+        const data = await getProducts();
         setProducts(data);
       } catch (error) {
         console.error('Error al obtener productos:', error);
@@ -38,7 +39,7 @@ const Catalogo: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // Handlers de filtros
+  // Handlers de cambios
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
@@ -54,7 +55,7 @@ const Catalogo: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // Filtrar
+  // Filtrado de productos
   const filteredProducts = products.filter((product) => {
     const matchSearch = searchQuery
       ? product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -81,7 +82,7 @@ const Catalogo: React.FC = () => {
     setCurrentPage(page);
   };
 
-  // Opciones de categoría y marca (únicas)
+  // Extrae categorías y marcas únicas (para <select>)
   const categoryOptions = Array.from(new Set(products.map((p) => p.category)));
   const brandOptions = Array.from(new Set(products.map((p) => p.brand)));
 
@@ -91,6 +92,7 @@ const Catalogo: React.FC = () => {
       <div className="max-w-7xl mx-auto p-6">
         {/* Filtros */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
+          {/* Filtro por Categoría */}
           <div className="w-full sm:w-1/4">
             <select
               value={selectedCategory}
@@ -106,6 +108,7 @@ const Catalogo: React.FC = () => {
             </select>
           </div>
 
+          {/* Filtro por Marca */}
           <div className="w-full sm:w-1/4">
             <select
               value={selectedBrand}
@@ -123,6 +126,7 @@ const Catalogo: React.FC = () => {
             </select>
           </div>
 
+          {/* Buscador por Nombre */}
           <div className="w-full sm:w-1/2">
             <input
               type="text"
@@ -138,42 +142,35 @@ const Catalogo: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentProducts.length > 0 ? (
             currentProducts.map((product) => (
-              <div
-                key={product.name}
-                className="bg-white shadow-lg rounded-lg overflow-hidden"
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
+              <div key={product.name} className="bg-white shadow-lg rounded-lg overflow-hidden">
+                {product.image && (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+
                 <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {product.name}
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
                   <p className="text-gray-600 mt-2">{product.description}</p>
+
+                  {/* Mostramos sólo lo que queramos en el catálogo */}
                   <p className="text-sm text-gray-600 mt-2">
-                    <strong>Marca:</strong> {product.brand || 'N/A'}
+                    <strong>Categoría:</strong> {product.category}
                   </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Precio:</strong> $
-                    {product.price?.toFixed(2) ?? '0.00'}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Stock:</strong> {product.stock ?? 0}
-                  </p>
-                  {product.createdAt && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      Creado: {new Date(product.createdAt).toLocaleDateString('es-ES')}
+                  {product.brand && (
+                    <p className="text-sm text-gray-600">
+                      <strong>Marca:</strong> {product.brand}
                     </p>
                   )}
-                  {product.updatedAt && (
-                    <p className="text-xs text-gray-500">
-                      Actualizado:{' '}
-                      {new Date(product.updatedAt).toLocaleDateString('es-ES')}
+                  {product.price !== undefined && (
+                    <p className="text-sm text-gray-600">
+                      <strong>Precio:</strong> ${product.price.toFixed(2)}
                     </p>
                   )}
 
+                  {/* Botón de detalle (opcional) */}
                   <div className="flex justify-between items-center mt-4">
                     <Link to={`/products/${encodeURIComponent(product.name)}`}>
                       <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
@@ -185,9 +182,7 @@ const Catalogo: React.FC = () => {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500">
-              No se encontraron productos.
-            </p>
+            <p className="text-center text-gray-500">No se encontraron productos.</p>
           )}
         </div>
 
@@ -208,9 +203,7 @@ const Catalogo: React.FC = () => {
                   key={page}
                   onClick={() => handlePageChange(page)}
                   className={`mx-1 px-3 py-1 rounded ${
-                    currentPage === page
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200'
+                    currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
                   }`}
                 >
                   {page}

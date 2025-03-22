@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import api from '../../config/axios'; // o bien, usar tus funciones en DevTreeAPI
 import { isAxiosError } from 'axios';
+import api from '../../config/axios';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
@@ -11,7 +11,7 @@ interface ProductFormData {
   category: string;
   brand?: string;
   price?: number;
-  stock?: number;
+  // stock?: number; // si no lo quieres pedir aquí, quítalo
 }
 
 const RegisterProduct = () => {
@@ -24,28 +24,33 @@ const RegisterProduct = () => {
 
   const handleRegisterProduct = async (formData: ProductFormData) => {
     try {
-      // 1. Crear producto
+      // 1. Crear el producto en la base de datos (sin imagen)
       await api.post('/admin/product/register', formData);
 
-      // 2. Subir imagen, si existe
+      // 2. Subir la imagen si el usuario la adjuntó
       const imageInput = document.getElementById('image') as HTMLInputElement;
       if (imageInput?.files && imageInput.files[0]) {
         const imageFile = imageInput.files[0];
         const imageFormData = new FormData();
         imageFormData.append('file', imageFile);
+        // Importante: el backend usa `fields.name` para identificar el producto
         imageFormData.append('name', formData.name);
 
+        // Esperamos la respuesta para que efectivamente se guarde la URL en la BD
         const { data } = await api.post('/product/image', imageFormData);
-        toast.success(data); // "Producto registrado correctamente" o lo que devuelva
+        // Generalmente "data" = "Producto registrado correctamente" o algo similar
+        toast.success(String(data));
       }
 
-      reset();
+      // Notificamos éxito y reseteamos el formulario
       toast.success('Producto registrado correctamente');
+      reset();
     } catch (error) {
       if (isAxiosError(error) && error.response) {
         toast.error(error.response.data.error);
       } else {
         toast.error('Error interno al registrar producto');
+        console.error(error);
       }
     }
   };
@@ -58,6 +63,7 @@ const RegisterProduct = () => {
           <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
             Registrar Producto
           </h2>
+
           <form onSubmit={handleSubmit(handleRegisterProduct)} className="space-y-5">
             {/* Nombre */}
             <div>
@@ -85,9 +91,7 @@ const RegisterProduct = () => {
                 id="description"
                 placeholder="Descripción del producto"
                 className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
-                {...register('description', {
-                  required: 'La descripción es obligatoria',
-                })}
+                {...register('description', { required: 'La descripción es obligatoria' })}
               />
               {errors.description && (
                 <p className="text-red-500 text-sm">{errors.description.message}</p>
@@ -140,20 +144,6 @@ const RegisterProduct = () => {
               />
             </div>
 
-            {/* Stock */}
-            <div>
-              <label htmlFor="stock" className="block text-lg font-medium text-blue-700">
-                Stock
-              </label>
-              <input
-                id="stock"
-                type="number"
-                placeholder="Cantidad en inventario"
-                className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
-                {...register('stock', { valueAsNumber: true })}
-              />
-            </div>
-
             {/* Imagen */}
             <div>
               <label className="block text-lg font-medium text-blue-700">Subir Imagen</label>
@@ -165,6 +155,7 @@ const RegisterProduct = () => {
               />
             </div>
 
+            {/* Botón */}
             <button
               type="submit"
               className="w-full py-3 mt-5 text-white bg-blue-500 rounded-lg hover:bg-blue-600 font-bold text-lg transition duration-300"
