@@ -2,20 +2,34 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { Product } from '../../types/product';
 import { getProducts } from '../../api/DevTreeAPI';
+
+interface Product {
+  name: string;
+  description: string;
+  category: string;
+  image?: string;
+  brand?: string;
+  price?: number;
+  stock?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 const Catalogo: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('');
+
+  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // Número de productos por página
+  const itemsPerPage = 9;
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const data = await getProducts();
+        const data = await getProducts(); 
         setProducts(data);
       } catch (error) {
         console.error('Error al obtener productos:', error);
@@ -24,23 +38,40 @@ const Catalogo: React.FC = () => {
     fetchProducts();
   }, []);
 
+  // Handlers de filtros
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1); // Reinicia la página cuando cambia la búsqueda
+    setCurrentPage(1);
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(e.target.value);
-    setCurrentPage(1); // Reinicia la página cuando cambia la categoría
+    setCurrentPage(1);
   };
 
-  // Filtrado de productos por categoría y búsqueda
-  const filteredProducts = products.filter(product =>
-    (selectedCategory ? product.category === selectedCategory : true) &&
-    (searchQuery ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) : true)
-  );
+  const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedBrand(e.target.value);
+    setCurrentPage(1);
+  };
 
-  // Cálculo de la paginación
+  // Filtrar
+  const filteredProducts = products.filter((product) => {
+    const matchSearch = searchQuery
+      ? product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+
+    const matchCategory = selectedCategory
+      ? product.category === selectedCategory
+      : true;
+
+    const matchBrand = selectedBrand
+      ? product.brand === selectedBrand
+      : true;
+
+    return matchSearch && matchCategory && matchBrand;
+  });
+
+  // Paginación
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -50,30 +81,49 @@ const Catalogo: React.FC = () => {
     setCurrentPage(page);
   };
 
+  // Opciones de categoría y marca (únicas)
+  const categoryOptions = Array.from(new Set(products.map((p) => p.category)));
+  const brandOptions = Array.from(new Set(products.map((p) => p.brand)));
+
   return (
     <div>
       <Header />
       <div className="max-w-7xl mx-auto p-6">
-        {/* Filtro de categoría y buscador */}
-        <div className="flex justify-between items-center mb-6">
-          {/* ComboBox de Categorías */}
-          <div className="w-1/4">
+        {/* Filtros */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
+          <div className="w-full sm:w-1/4">
             <select
               value={selectedCategory}
               onChange={handleCategoryChange}
               className="w-full p-2 border border-gray-300 rounded-lg"
             >
-              <option value="">Seleccionar categoría</option>
-              {[...new Set(products.map(p => p.category))].map(category => (
-                <option key={category} value={category}>
-                  {category}
+              <option value="">Todas las categorías</option>
+              {categoryOptions.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Buscador */}
-          <div className="w-2/3">
+          <div className="w-full sm:w-1/4">
+            <select
+              value={selectedBrand}
+              onChange={handleBrandChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Todas las marcas</option>
+              {brandOptions.map((brand) =>
+                brand ? (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ) : null
+              )}
+            </select>
+          </div>
+
+          <div className="w-full sm:w-1/2">
             <input
               type="text"
               placeholder="Buscar productos..."
@@ -84,19 +134,46 @@ const Catalogo: React.FC = () => {
           </div>
         </div>
 
-        {/* Tarjetas de Productos */}
+        {/* Grid de productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentProducts.length > 0 ? (
-            currentProducts.map(product => (
-              <div key={product.name} className="bg-white shadow-lg rounded-lg overflow-hidden">
+            currentProducts.map((product) => (
+              <div
+                key={product.name}
+                className="bg-white shadow-lg rounded-lg overflow-hidden"
+              >
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {product.name}
+                  </h3>
                   <p className="text-gray-600 mt-2">{product.description}</p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    <strong>Marca:</strong> {product.brand || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Precio:</strong> $
+                    {product.price?.toFixed(2) ?? '0.00'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Stock:</strong> {product.stock ?? 0}
+                  </p>
+                  {product.createdAt && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Creado: {new Date(product.createdAt).toLocaleDateString('es-ES')}
+                    </p>
+                  )}
+                  {product.updatedAt && (
+                    <p className="text-xs text-gray-500">
+                      Actualizado:{' '}
+                      {new Date(product.updatedAt).toLocaleDateString('es-ES')}
+                    </p>
+                  )}
+
                   <div className="flex justify-between items-center mt-4">
                     <Link to={`/products/${encodeURIComponent(product.name)}`}>
                       <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
@@ -108,11 +185,13 @@ const Catalogo: React.FC = () => {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500">No se encontraron productos.</p>
+            <p className="text-center text-gray-500">
+              No se encontraron productos.
+            </p>
           )}
         </div>
 
-        {/* Controles de Paginación */}
+        {/* Paginación */}
         {totalPages > 1 && (
           <div className="flex justify-center mt-6">
             <button
@@ -129,7 +208,9 @@ const Catalogo: React.FC = () => {
                   key={page}
                   onClick={() => handlePageChange(page)}
                   className={`mx-1 px-3 py-1 rounded ${
-                    currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                    currentPage === page
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200'
                   }`}
                 >
                   {page}
