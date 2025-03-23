@@ -9,6 +9,8 @@ import {
 } from '../../api/DevTreeAPI';
 import { Product } from '../../types/product';
 import { toast } from 'sonner';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 const ProductCrud: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -120,6 +122,8 @@ const ProductCrud: React.FC = () => {
   };
 
   return (
+    <div>
+        <Header/>
     <div className="p-4">
       <div className="flex justify-end mb-3">
         <button 
@@ -344,6 +348,8 @@ const ProductCrud: React.FC = () => {
         </div>
       )}
 
+    </div>
+    <Footer/>
     </div>
   );
 };
