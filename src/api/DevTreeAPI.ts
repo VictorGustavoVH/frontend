@@ -87,18 +87,19 @@ export async function registerProduct(productData: Partial<Product>) {
   }
 }
 
-// Sube imagen de un producto
 export async function uploadProductImage(file: File, productName: string) {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('name', productName);
-    const { data } = await api.post('/product/image', formData);
-    return data;
-  } catch (error) {
-    if (isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error);
+    // productName debería ser el slug (p. ej. "MiProducto")
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('name', productName); // <--- OJO, este "name" es el slug
+  
+      const { data } = await api.post('/product/image', formData);
+      return data;
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.error);
+      }
+      throw error;
     }
-    throw error;
   }
-}
