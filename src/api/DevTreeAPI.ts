@@ -103,3 +103,28 @@ export async function uploadProductImage(file: File, productName: string) {
       throw error;
     }
   }
+// Actualiza un producto por ID
+export async function updateProduct(productId: string, updateData: Partial<Product>) {
+  try {
+    const { data } = await api.patch(`/admin/product/${productId}`, updateData);
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    }
+    throw error;
+  }
+}
+
+// Elimina un producto por ID
+export async function deleteProduct(productId: string) {
+  try {
+    const { data } = await api.delete(`/admin/product/${productId}`);
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    }
+    throw error;
+  }
+}

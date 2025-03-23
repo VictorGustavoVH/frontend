@@ -17,6 +17,7 @@ import SmartViewDashboard from './views/private/SmartViewDashboard';
 import LinkTreeView from './views/private/LinkTreeView';
 import ProfileView from './views/private/UserProfileForm';
 import UserManagement from './views/private/UserManagement';
+import ProductCrud from './views/private/ProductCrud';
 
 export default function Router() {
   return (
@@ -30,8 +31,9 @@ export default function Router() {
         <Route path="/admin" element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route index element={<LinkTreeView />} />
-            <Route path="product/register" element={<RegisterProduct />} />
+            <Route path="product/GestionProductos/Register" element={<RegisterProduct />} />
             <Route path="users" element={<UserManagement />} />
+            <Route path="product/GestionProductos"element={<ProductCrud/>}/>
           </Route>
         </Route>
 

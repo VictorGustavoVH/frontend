@@ -16,7 +16,7 @@ const AdminNavigation = () => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4">
           <ul className="space-y-3">
-            <li><Link to="/admin/product/register" className="text-gray-600 hover:text-indigo-600">Productos</Link></li>
+            <li><Link to="/admin/product/GestionProductos" className="text-gray-600 hover:text-indigo-600">Productos</Link></li>
             <li><Link to="/admin/users" className="text-gray-600 hover:text-indigo-600">Usuarios</Link></li>
             <li><Link to="/admin/pagina" className="text-gray-600 hover:text-indigo-600">Gestión de Página</Link></li>
           </ul>
