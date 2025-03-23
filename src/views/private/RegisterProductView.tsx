@@ -24,25 +24,25 @@ const RegisterProduct = () => {
 
   const handleRegisterProduct = async (formData: ProductFormData) => {
     try {
-      // 1. Crear el producto en la base de datos (sin imagen)
-      await api.post('/admin/product/register', formData);
-
-      // 2. Subir la imagen si el usuario la adjuntó
+      // 1) Crear el producto
+      const resp = await api.post('/admin/product/register', formData);
+      // Revisa si el backend te retornó "slug"
+      const slugName = resp.data.slug; // "MiProducto"
+      
+      // 2) Subir imagen si existe
       const imageInput = document.getElementById('image') as HTMLInputElement;
       if (imageInput?.files && imageInput.files[0]) {
         const imageFile = imageInput.files[0];
         const imageFormData = new FormData();
         imageFormData.append('file', imageFile);
-        // Importante: el backend usa `fields.name` para identificar el producto
-        imageFormData.append('name', formData.name);
-
-        // Esperamos la respuesta para que efectivamente se guarde la URL en la BD
+  
+        // Asegúrate de enviar el slug que usó la BD
+        imageFormData.append('name', slugName);
+  
         const { data } = await api.post('/product/image', imageFormData);
-        // Generalmente "data" = "Producto registrado correctamente" o algo similar
         toast.success(String(data));
       }
-
-      // Notificamos éxito y reseteamos el formulario
+  
       toast.success('Producto registrado correctamente');
       reset();
     } catch (error) {
@@ -54,6 +54,7 @@ const RegisterProduct = () => {
       }
     }
   };
+  
 
   return (
     <div>
