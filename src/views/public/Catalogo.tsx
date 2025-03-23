@@ -4,7 +4,6 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getProducts } from '../../api/DevTreeAPI';
 
-// Solo definimos las props que necesitamos en el catálogo
 interface Product {
   name: string;
   description: string;
@@ -12,20 +11,16 @@ interface Product {
   image?: string;
   brand?: string;
   price?: number;
-  // stock?: number;         // lo quitamos
-  // createdAt?: string;    // lo quitamos
-  // updatedAt?: string;    // lo quitamos
 }
 
 const Catalogo: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  // Filtros
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('');
-
-  // Paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  // "Show More" - cuántos productos se ven
+  const [visibleCount, setVisibleCount] = useState(8);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -42,17 +37,17 @@ const Catalogo: React.FC = () => {
   // Handlers de cambios
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1);
+    setVisibleCount(8); // cuando busco, reseteo a 8
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(e.target.value);
-    setCurrentPage(1);
+    setVisibleCount(8);
   };
 
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedBrand(e.target.value);
-    setCurrentPage(1);
+    setVisibleCount(8);
   };
 
   // Filtrado de productos
@@ -72,154 +67,197 @@ const Catalogo: React.FC = () => {
     return matchSearch && matchCategory && matchBrand;
   });
 
-  // Paginación
-  const indexOfLastProduct = currentPage * itemsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  // Productos visibles (hasta visibleCount)
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Extrae categorías y marcas únicas (para <select>)
+  // Opciones únicas de categoría y marca
   const categoryOptions = Array.from(new Set(products.map((p) => p.category)));
   const brandOptions = Array.from(new Set(products.map((p) => p.brand)));
+
+  // Mostrar u ocultar el botón "Show More"
+  const canShowMore = visibleCount < filteredProducts.length;
 
   return (
     <div>
       <Header />
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Filtros */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
-          {/* Filtro por Categoría */}
-          <div className="w-full sm:w-1/4">
-            <select
-              value={selectedCategory}
-              onChange={handleCategoryChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              <option value="">Todas las categorías</option>
-              {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
+      <section className="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+        <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
 
-          {/* Filtro por Marca */}
-          <div className="w-full sm:w-1/4">
-            <select
-              value={selectedBrand}
-              onChange={handleBrandChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              <option value="">Todas las marcas</option>
-              {brandOptions.map((brand) =>
-                brand ? (
-                  <option key={brand} value={brand}>
-                    {brand}
+          {/* Heading & Filters */}
+          <div className="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
+            <div>
+              {/* Rastro / Título (puedes ajustarlo a tu gusto) */}
+              <nav className="flex" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                  <li className="inline-flex items-center">
+                    <a
+                      href="#"
+                      className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
+                    >
+                      Home
+                    </a>
+                  </li>
+                  <li>
+                    <div className="flex items-center">
+                      <svg
+                        className="h-5 w-5 text-gray-400 rtl:rotate-180"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m9 5 7 7-7 7"
+                        />
+                      </svg>
+                      <span className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2">
+                        Products
+                      </span>
+                    </div>
+                  </li>
+                </ol>
+              </nav>
+              <h2 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+                Catálogo de Productos
+              </h2>
+            </div>
+
+            {/* Tus Filtros: Categoría, Marca, Buscador */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+              {/* Filtro Categoría */}
+              <select
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                className="w-full sm:w-auto p-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Todas las categorías</option>
+                {categoryOptions.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
                   </option>
-                ) : null
-              )}
-            </select>
-          </div>
+                ))}
+              </select>
 
-          {/* Buscador por Nombre */}
-          <div className="w-full sm:w-1/2">
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div>
-        </div>
-
-        {/* Grid de productos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentProducts.length > 0 ? (
-            currentProducts.map((product) => (
-              <div key={product.name} className="bg-white shadow-lg rounded-lg overflow-hidden">
-                {product.image && (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
+              {/* Filtro Marca */}
+              <select
+                value={selectedBrand}
+                onChange={handleBrandChange}
+                className="w-full sm:w-auto p-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Todas las marcas</option>
+                {brandOptions.map((brand) =>
+                  brand ? (
+                    <option key={brand} value={brand}>
+                      {brand}
+                    </option>
+                  ) : null
                 )}
+              </select>
 
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
-                  <p className="text-gray-600 mt-2">{product.description}</p>
+              {/* Buscador */}
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                className="w-full sm:w-auto p-2 border border-gray-300 rounded-lg"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
+          </div>
 
-                  {/* Mostramos sólo lo que queramos en el catálogo */}
-                  <p className="text-sm text-gray-600 mt-2">
-                    <strong>Categoría:</strong> {product.category}
+          {/* Grid de productos */}
+          <div className="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
+            {visibleProducts.map((product) => (
+              <div
+                key={product.name}
+                className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+              >
+                <div className="h-56 w-full">
+                  <Link to={`/products/${encodeURIComponent(product.name)}`}>
+                    {/* Si no hay imagen, podrías mostrar un placeholder */}
+                    {product.image ? (
+                      <img
+                        className="mx-auto h-full"
+                        src={product.image}
+                        alt={product.name}
+                      />
+                    ) : (
+                      <img
+                        className="mx-auto h-full"
+                        src="https://via.placeholder.com/300x200?text=No+Image"
+                        alt={product.name}
+                      />
+                    )}
+                  </Link>
+                </div>
+
+                <div className="pt-6">
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    {/* Ejemplo de label de marca */}
+                    {product.brand && (
+                      <span className="me-2 rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                        {product.brand}
+                      </span>
+                    )}
+                    {/* Acciones ocultas, etc. */}
+                  </div>
+
+                  {/* Nombre del producto */}
+                  <Link
+                    to={`/products/${encodeURIComponent(product.name)}`}
+                    className="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white"
+                  >
+                    {product.name}
+                  </Link>
+
+                  {/* Descripción corta */}
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    {product.description}
                   </p>
-                  {product.brand && (
-                    <p className="text-sm text-gray-600">
-                      <strong>Marca:</strong> {product.brand}
-                    </p>
-                  )}
-                  {product.price !== undefined && (
-                    <p className="text-sm text-gray-600">
-                      <strong>Precio:</strong> ${product.price.toFixed(2)}
-                    </p>
-                  )}
 
-                  {/* Botón de detalle (opcional) */}
-                  <div className="flex justify-between items-center mt-4">
-                    <Link to={`/products/${encodeURIComponent(product.name)}`}>
-                      <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                        Ver detalle
-                      </button>
+                  {/* Precio */}
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <p className="text-2xl font-extrabold leading-tight text-gray-900 dark:text-white">
+                      {product.price
+                        ? `$${product.price.toFixed(2)}`
+                        : '$0.00'}
+                    </p>
+                    {/* Botón de detalle, "Agregar al carrito", etc. */}
+                    <Link
+                      to={`/products/${encodeURIComponent(product.name)}`}
+                      className="inline-flex items-center rounded-lg bg-primary-700 px-3 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                    >
+                      Ver detalle
                     </Link>
                   </div>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-500">No se encontraron productos.</p>
-          )}
-        </div>
-
-        {/* Paginación */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="mx-1 px-3 py-1 bg-gray-200 rounded"
-            >
-              Anterior
-            </button>
-            {[...Array(totalPages)].map((_, index) => {
-              const page = index + 1;
-              return (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`mx-1 px-3 py-1 rounded ${
-                    currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                  }`}
-                >
-                  {page}
-                </button>
-              );
-            })}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="mx-1 px-3 py-1 bg-gray-200 rounded"
-            >
-              Siguiente
-            </button>
+            ))}
           </div>
-        )}
-      </div>
+
+          {/* Botón "Show more" */}
+          {canShowMore && (
+            <div className="w-full text-center">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + 8)}
+                className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+              >
+                Show more
+              </button>
+            </div>
+          )}
+
+          {/* Opcional: Modal de filtros avanzado (lo copias si quieres, o lo quitas) */}
+          {/* <form> .... </form> */}
+        </div>
+      </section>
       <Footer />
     </div>
   );
