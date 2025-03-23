@@ -6,6 +6,7 @@ import {
   updateProduct as apiUpdateProduct,
   deleteProduct as apiDeleteProduct,
   // Imagínate que exista un endpoint para borrar todo:
+ 
 } from '../../api/DevTreeAPI'
 import { Product } from '../../types/product'
 import { toast } from 'sonner'
@@ -125,21 +126,7 @@ const ProductCrud: React.FC = () => {
   }
 
   /* ---------------- ELIMINAR TODOS (opcional) ---------------- */
-  const openDeleteAllModal = () => {
-    setShowDeleteAllModal(true)
-  }
-  const handleDeleteAll = async () => {
-    try {
-      // Llamar a la API que borra todo
-      await apiDeleteAllProducts()
-      toast.success('Todos los productos eliminados')
-      setShowDeleteAllModal(false)
-      fetchAllProducts()
-    } catch (err: any) {
-      console.error(err)
-      toast.error(err.message || 'Error eliminando todo')
-    }
-  }
+  
 
   /* ---------------- SEARCH & FILTER local ---------------- */
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -303,19 +290,7 @@ const ProductCrud: React.FC = () => {
                 </button>
 
                 {/* Delete All */}
-                <button
-                  onClick={openDeleteAllModal}
-                  className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm 
-                             font-medium text-gray-900 focus:outline-none bg-white 
-                             rounded-lg border border-gray-200 hover:bg-gray-100 
-                             hover:text-primary-700 focus:z-10 focus:ring-4 
-                             focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 
-                             dark:text-gray-400 dark:border-gray-600 dark:hover:text-white 
-                             dark:hover:bg-gray-700"
-                  type="button"
-                >
-                  Delete all
-                </button>
+                
               </div>
             </div>
           </div>
@@ -1035,16 +1010,7 @@ const ProductCrud: React.FC = () => {
                 >
                   No, cancel
                 </button>
-                <button
-                  onClick={handleDeleteAll}
-                  type="button"
-                  className="py-2 px-3 text-sm font-medium text-center text-white 
-                             bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 
-                             focus:outline-none focus:ring-red-300 dark:bg-red-500 
-                             dark:hover:bg-red-600 dark:focus:ring-red-900"
-                >
-                  Yes, delete all
-                </button>
+               
               </div>
             </div>
           </div>
