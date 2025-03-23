@@ -1,4 +1,4 @@
-//public/home
+// src/pages/Home.tsx (o la ruta que tengas para tu página de inicio)
 import React, { useState } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -35,8 +35,11 @@ const Home: React.FC = () => {
     <div>
       <Header />
 
-  
-      <section className="bg-white py-16 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between">
+      {/*
+        Sección principal con la clase "animate-fadeIn"
+        para que aparezca suavemente al montar el componente
+      */}
+      <section className="bg-white py-16 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between animate-fadeIn">
         <div className="md:w-1/2">
           <h1 className="text-5xl font-extrabold text-gray-800 leading-tight mb-4">
             VENTANA AUTOMATIZADA
@@ -60,10 +63,9 @@ const Home: React.FC = () => {
           />
         </div>
       </section>
-      
 
-      {/* Sección de Introducción */}
-      <section className="py-12 px-4 md:px-8 bg-gray-100">
+      {/* Sección de Introducción animada */}
+      <section className="py-12 px-4 md:px-8 bg-gray-100 animate-fadeIn">
         <div className="max-w-5xl mx-auto">
           <h2 className={titleClasses}>¿Por qué una Ventana automatizada?</h2>
           <p className={paragraphClasses}>
@@ -92,7 +94,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Sección de Cómo Funciona */}
-      <section className="py-12 px-4 md:px-8">
+      <section className="py-12 px-4 md:px-8 animate-fadeIn">
         <div className="max-w-5xl mx-auto">
           <h2 className={titleClasses}>¿Cómo Funciona?</h2>
           <p className={`${paragraphClasses} max-w-3xl`}>
@@ -129,7 +131,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Sección de Características Principales */}
-      <section className="py-12 px-4 md:px-8 bg-gray-100">
+      <section className="py-12 px-4 md:px-8 bg-gray-100 animate-fadeIn">
         <div className="max-w-5xl mx-auto">
           <h2 className={titleClasses}>Características Principales</h2>
           <p className={paragraphClasses}>
@@ -182,7 +184,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Sección de Testimonios */}
-      <section className="py-12 px-4 md:px-8">
+      <section className="py-12 px-4 md:px-8 animate-fadeIn">
         <div className="max-w-5xl mx-auto">
           <h2 className={titleClasses}>Lo Que Dicen Nuestros Clientes</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
@@ -211,7 +213,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Sección de Preguntas Frecuentes (FAQ) */}
-      <section className="py-12 px-4 md:px-8 bg-gray-100">
+      <section className="py-12 px-4 md:px-8 bg-gray-100 animate-fadeIn">
         <div className="max-w-5xl mx-auto">
           <h2 className={titleClasses}>Preguntas Frecuentes</h2>
           <div className="space-y-4 mt-8">
@@ -261,7 +263,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Sección de Ventajas */}
-      <section className="py-12 px-4 md:px-8">
+      <section className="py-12 px-4 md:px-8 animate-fadeIn">
         <div className="max-w-5xl mx-auto">
           <h2 className={titleClasses}>Ventajas de Tener una Ventana automatizada</h2>
           <ul className="list-decimal list-inside space-y-3 mt-4 text-gray-700">
@@ -289,7 +291,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Sección CTA (Call To Action) */}
-      <section className="py-12 px-4 md:px-8 text-center bg-white">
+      <section className="py-12 px-4 md:px-8 text-center bg-white animate-fadeIn">
         <div className="max-w-xl mx-auto">
           <h2 className={titleClasses}>¿Te interesa una Ventana automatizada?</h2>
           <p className="text-lg mb-8 text-gray-700">
