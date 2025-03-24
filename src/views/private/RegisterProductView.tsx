@@ -5,14 +5,16 @@ import api from '../../config/axios';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
-interface ProductFormData {
+export type Product = {
+  _id?: string; // <- opcional, para referenciar el documento de Mongo
   name: string;
   description: string;
   category: string;
+  image: string;
   brand?: string;
   price?: number;
-  // stock?: number; // si no lo quieres pedir aquí, quítalo
-}
+  stock?: number;
+};
 
 const RegisterProduct = () => {
   const {
@@ -20,9 +22,9 @@ const RegisterProduct = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ProductFormData>();
+  } = useForm<Product>();
 
-  const handleRegisterProduct = async (formData: ProductFormData) => {
+  const handleRegisterProduct = async (formData: Product) => {
     try {
       // 1) Crear el producto
       const resp = await api.post('/admin/product/register', formData);
