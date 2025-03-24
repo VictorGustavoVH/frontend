@@ -25,11 +25,9 @@ const Register: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
-  // Estado para el modal de éxito
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Observamos el valor del password para validar confirmación
   const watchPassword = watch('password');
 
   const toggleShowPassword = () => setShowPassword((prev) => !prev);
@@ -60,7 +58,6 @@ const Register: React.FC = () => {
     }
   };
 
-  // Redirige automáticamente después de mostrar el modal de éxito
   useEffect(() => {
     if (showSuccessModal) {
       const timer = setTimeout(() => {
@@ -321,10 +318,9 @@ const Register: React.FC = () => {
 
       <Footer />
 
-      {/* Modal de éxito para registro */}
+      {/* Modal de éxito con animación del ícono */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
-          {/* Fondo semitransparente */}
           <div className="fixed inset-0 bg-black opacity-50"></div>
           <div className="relative p-4 w-full max-w-md h-full md:h-auto">
             <div className="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
@@ -338,7 +334,7 @@ const Register: React.FC = () => {
                 </svg>
                 <span className="sr-only">Cerrar modal</span>
               </button>
-              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 p-2 flex items-center justify-center mx-auto mb-3.5">
+              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 p-2 flex items-center justify-center mx-auto mb-3.5 animate-bounce">
                 <svg aria-hidden="true" className="w-8 h-8 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
