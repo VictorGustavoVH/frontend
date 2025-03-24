@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import SmartViewImage from '../assets/SmartView.png';
 import AdminNavigation from "./nav/AdminNavigation";
 import HomeNavigation from "./nav/HomeNavigation";
-import { FaUserCircle, FaBars, FaTimes, FaShoppingCart } from "react-icons/fa"; // Agregamos FaShoppingCart
+import { FaUserCircle, FaBars, FaTimes, FaShoppingCart } from "react-icons/fa"; // Iconos
 
 // Interfaz del usuario
 interface User {
@@ -53,6 +53,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("AUTH_TOKEN");
+    // Redirige a la página de inicio
     navigate("/");
   };
 
@@ -83,15 +84,12 @@ const Header = () => {
               {label}
             </Link>
           ))}
-          {/* Enlace Carrito (visible si el usuario está logueado) */}
-          {user && (
-            <Link
-              to="/cart"
-              className="flex items-center text-gray-900 px-4 py-2 rounded-md text-base font-medium transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
-            >
-              <FaShoppingCart className="mr-2" /> Carrito
-            </Link>
-          )}
+
+          {/* 
+            Aquí se QUITA el enlace duplicado de Carrito para evitar la doble aparición.
+            Si deseas que aparezca aquí en vez de en el menú de usuario, coméntalo en el otro bloque.
+          */}
+
           {/* Dropdown "Acerca de" */}
           <div className="relative">
             <button
@@ -138,15 +136,16 @@ const Header = () => {
           {user ? (
             <>
               {user.role === "admin" ? <AdminNavigation /> : <HomeNavigation />}
-              {/* Agregamos enlace de Carrito para usuarios si aún no se agregó en NAV_LINKS */}
-              {user && (
-                <Link
-                  to="/cart"
-                  className="flex items-center text-gray-900 px-4 py-2 rounded-md text-base font-medium transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
-                >
-                  <FaShoppingCart className="mr-2" /> Carrito
-                </Link>
-              )}
+
+              {/* Enlace Carrito SOLO si el usuario está logueado */}
+              <Link
+                to="/cart"
+                className="flex items-center text-gray-900 px-4 py-2 rounded-md text-base font-medium transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
+              >
+                <FaShoppingCart className="mr-2" /> Carrito
+              </Link>
+
+              {/* Menú de perfil */}
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -217,7 +216,8 @@ const Header = () => {
               {label}
             </Link>
           ))}
-          {/* Enlace Carrito para móvil */}
+
+          {/* Enlace Carrito en móvil, SOLO si user está logueado */}
           {user && (
             <Link
               to="/cart"
@@ -227,6 +227,8 @@ const Header = () => {
               <FaShoppingCart className="mr-2" /> Carrito
             </Link>
           )}
+
+          {/* Dropdown "Acerca de" en móvil */}
           <div className="relative">
             <button
               onClick={() => setIsAboutOpen(!isAboutOpen)}
@@ -269,24 +271,24 @@ const Header = () => {
               </ul>
             </div>
           </div>
+
+          {/* Menú de usuario en móvil */}
           {user ? (
-            <>
-              <div className="mt-4 flex flex-col space-y-2 px-3">
-                <Link
-                  to="/perfil"
-                  className="block text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-base font-medium"
-                  onClick={() => setIsMobileNavOpen(false)}
-                >
-                  Actualizar datos
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="block text-red-500 hover:text-red-700 w-full text-left text-base font-medium transition-colors duration-200"
-                >
-                  Cerrar sesión
-                </button>
-              </div>
-            </>
+            <div className="mt-4 flex flex-col space-y-2 px-3">
+              <Link
+                to="/perfil"
+                className="block text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-base font-medium"
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                Actualizar datos
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="block text-red-500 hover:text-red-700 w-full text-left text-base font-medium transition-colors duration-200"
+              >
+                Cerrar sesión
+              </button>
+            </div>
           ) : (
             <div className="space-y-2 mt-4 px-3">
               <Link
