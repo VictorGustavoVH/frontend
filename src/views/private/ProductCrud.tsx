@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   getProducts,
+  uploadProductImage,
   updateProduct as apiUpdateProduct,
-  deleteProduct as apiDeleteProduct,
-  uploadProductImage
+  deleteProduct as apiDeleteProduct
 } from '../../api/DevTreeAPI';
 import { Product } from '../../types/product';
 import { toast } from 'sonner';
@@ -18,6 +18,8 @@ const ProductCrud: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Partial<Product>>({});
+  // Estado para almacenar el nuevo archivo de imagen en la edición
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchAllProducts();
@@ -40,14 +42,19 @@ const ProductCrud: React.FC = () => {
         toast.error('No hay producto seleccionado');
         return;
       }
+      // Actualizar campos (sin la imagen, ya que la imagen se gestiona aparte)
       const { image, ...fields } = editProduct;
       await apiUpdateProduct(editProduct._id, fields);
-      if (image) {
-        await uploadProductImage(image as unknown as File, editProduct.name!);
+
+      // Si se seleccionó un nuevo archivo, subirlo
+      if (editImageFile) {
+        await uploadProductImage(editImageFile, editProduct.name!);
       }
+
       toast.success('Producto actualizado');
       setShowUpdateModal(false);
       setEditProduct({});
+      setEditImageFile(null);
       fetchAllProducts();
     } catch (err: any) {
       toast.error(err.message || 'Error actualizando producto');
@@ -65,9 +72,11 @@ const ProductCrud: React.FC = () => {
     }
   };
 
+  // Apertura del modal de edición
   const openEditModal = (p: Product) => {
     setEditProduct(p);
     setShowUpdateModal(true);
+    setEditImageFile(null);
   };
 
   // Filtrar productos por búsqueda
@@ -116,7 +125,7 @@ const ProductCrud: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredProducts.map((prod) => (
-                <tr key={prod._id || prod.name} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <tr key={prod._id || prod.name} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   <td className="px-4 py-3">
                     {prod.image ? (
                       <img src={prod.image} alt={prod.name} className="w-16 h-16 object-cover rounded" />
@@ -131,14 +140,14 @@ const ProductCrud: React.FC = () => {
                   <td className="px-4 py-3 space-x-2">
                     <button 
                       onClick={() => openEditModal(prod)}
-                      className="text-blue-600 hover:text-blue-800 transition-colors flex items-center space-x-1"
+                      className="text-blue-600 hover:underline flex items-center space-x-1 transition-colors"
                     >
                       <FaEdit />
                       <span>Editar</span>
                     </button>
                     <button 
                       onClick={() => handleDeleteProduct(prod._id!)}
-                      className="text-red-600 hover:text-red-800 transition-colors flex items-center space-x-1"
+                      className="text-red-600 hover:underline flex items-center space-x-1 transition-colors"
                     >
                       <FaTrash />
                       <span>Eliminar</span>
@@ -217,30 +226,41 @@ const ProductCrud: React.FC = () => {
                   accept="image/*"
                   onChange={(e) => {
                     if (e.target.files?.[0]) {
-                      setEditProduct({ ...editProduct, image: e.target.files[0] });
+                      setEditImageFile(e.target.files[0]);
                     }
                   }}
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {editProduct.image && (
-                  <div className="mt-2">
-                    <img 
-                      src={typeof editProduct.image === 'string' ? editProduct.image : URL.createObjectURL(editProduct.image)} 
-                      alt="Current" 
-                      className="w-16 h-16 object-cover rounded" 
+                <div className="mt-2">
+                  {editImageFile ? (
+                    <img
+                      src={URL.createObjectURL(editImageFile)}
+                      alt="Nueva"
+                      className="w-16 h-16 object-cover rounded"
                     />
-                  </div>
-                )}
+                  ) : (
+                    editProduct.image && (
+                      <img
+                        src={editProduct.image}
+                        alt="Actual"
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )
+                  )}
+                </div>
               </div>
               <div className="flex justify-end space-x-3">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowUpdateModal(false)}
                   className="px-4 py-2 border rounded hover:bg-gray-100 transition-colors"
                 >
                   Cancelar
                 </button>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors" type="submit">
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                  type="submit"
+                >
                   Actualizar
                 </button>
               </div>
