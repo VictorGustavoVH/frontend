@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   getProducts,
+  registerProduct,
   uploadProductImage,
   updateProduct as apiUpdateProduct,
   deleteProduct as apiDeleteProduct
@@ -11,7 +12,7 @@ import { Product } from '../../types/product';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaSearch, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
 
 const ProductCrud: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,6 +21,8 @@ const ProductCrud: React.FC = () => {
   const [editProduct, setEditProduct] = useState<Partial<Product>>({});
   // Estado para almacenar el nuevo archivo de imagen en la edición
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  // Estado para controlar cuál dropdown está abierto en la tabla
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllProducts();
@@ -42,15 +45,13 @@ const ProductCrud: React.FC = () => {
         toast.error('No hay producto seleccionado');
         return;
       }
-      // Actualizar campos (sin la imagen, ya que la imagen se gestiona aparte)
+      // Actualizar campos (sin la imagen, que se gestiona aparte)
       const { image, ...fields } = editProduct;
       await apiUpdateProduct(editProduct._id, fields);
-
       // Si se seleccionó un nuevo archivo, subirlo
       if (editImageFile) {
         await uploadProductImage(editImageFile, editProduct.name!);
       }
-
       toast.success('Producto actualizado');
       setShowUpdateModal(false);
       setEditProduct({});
@@ -77,6 +78,7 @@ const ProductCrud: React.FC = () => {
     setEditProduct(p);
     setShowUpdateModal(true);
     setEditImageFile(null);
+    setOpenDropdownId(null);
   };
 
   // Filtrar productos por búsqueda
@@ -125,7 +127,10 @@ const ProductCrud: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredProducts.map((prod) => (
-                <tr key={prod._id || prod.name} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <tr
+                  key={prod._id || prod.name}
+                  className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
                   <td className="px-4 py-3">
                     {prod.image ? (
                       <img src={prod.image} alt={prod.name} className="w-16 h-16 object-cover rounded" />
@@ -137,21 +142,34 @@ const ProductCrud: React.FC = () => {
                   <td className="px-4 py-3">{prod.category}</td>
                   <td className="px-4 py-3">{prod.brand}</td>
                   <td className="px-4 py-3">${prod.price?.toFixed(2)}</td>
-                  <td className="px-4 py-3 space-x-2">
-                    <button 
-                      onClick={() => openEditModal(prod)}
-                      className="text-blue-600 hover:underline flex items-center space-x-1 transition-colors"
+                  <td className="px-4 py-3 relative">
+                    <button
+                      onClick={() =>
+                        setOpenDropdownId(openDropdownId === prod._id ? null : prod._id!)
+                      }
+                      className="text-gray-600 hover:text-gray-800 focus:outline-none transition-transform duration-300"
                     >
-                      <FaEdit />
-                      <span>Editar</span>
+                      <FaEllipsisV />
                     </button>
-                    <button 
-                      onClick={() => handleDeleteProduct(prod._id!)}
-                      className="text-red-600 hover:underline flex items-center space-x-1 transition-colors"
-                    >
-                      <FaTrash />
-                      <span>Eliminar</span>
-                    </button>
+                    {openDropdownId === prod._id && (
+                      <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10 transition-all duration-200 transform origin-top">
+                        <button
+                          onClick={() => openEditModal(prod)}
+                          className="flex items-center w-full px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors"
+                        >
+                          <FaEdit className="mr-2" /> <span>Editar</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleDeleteProduct(prod._id!);
+                            setOpenDropdownId(null);
+                          }}
+                          className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <FaTrash className="mr-2" /> <span>Eliminar</span>
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
