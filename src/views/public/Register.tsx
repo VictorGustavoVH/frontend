@@ -24,8 +24,8 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = useState('');
-  // Estado para el mensaje de éxito
-  const [successMessage, setSuccessMessage] = useState('');
+  // Estado para controlar la visibilidad del modal de éxito
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Observamos el valor del password para validar confirmación
@@ -35,8 +35,7 @@ const Register: React.FC = () => {
 
   const onSubmit = async (data: RegisterForm) => {
     setErrorMessage('');
-    setSuccessMessage('');
-
+    // Validamos que las contraseñas coincidan
     if (data.password !== data.password_confirmation) {
       setErrorMessage('Las contraseñas no coinciden.');
       return;
@@ -45,14 +44,11 @@ const Register: React.FC = () => {
     try {
       const response = await api.post('/register', data);
 
-      // Mostramos el mensaje de éxito en el toast
+      // Mostramos un toast de éxito
       toast.success(response.data.message || 'Usuario registrado exitosamente');
-      // Guardamos el mensaje en el estado para mostrarlo en la página
-      setSuccessMessage(response.data.message || 'Usuario registrado exitosamente');
-
       reset();
-      // Redirigimos al login
-      navigate('/login');
+      // En lugar de redirigir de inmediato, mostramos el modal de éxito
+      setShowSuccessModal(true);
     } catch (error) {
       if (isAxiosError(error) && error.response) {
         const msg = error.response.data?.error || 'Ha ocurrido un error en el registro';
@@ -86,13 +82,6 @@ const Register: React.FC = () => {
               </div>
             )}
 
-            {/* Mensaje de éxito */}
-            {successMessage && (
-              <div className="bg-green-100 text-green-700 px-3 py-2 rounded">
-                {successMessage}
-              </div>
-            )}
-
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Columna izquierda */}
@@ -104,9 +93,7 @@ const Register: React.FC = () => {
                     <input
                       id="nombre"
                       type="text"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
                       placeholder="Juan Pérez"
                       {...register('nombre', { required: 'El nombre es obligatorio' })}
                     />
@@ -120,9 +107,7 @@ const Register: React.FC = () => {
                     <input
                       id="username"
                       type="text"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
                       placeholder="usuario123"
                       {...register('username', {
                         required: 'El nombre de usuario es obligatorio',
@@ -134,8 +119,7 @@ const Register: React.FC = () => {
                     />
                     {errors.username && <ErrorMessage>{errors.username.message}</ErrorMessage>}
                     <p className="text-xs text-gray-500 mt-1">
-                      El nombre de usuario debe tener entre 1 y 20 caracteres y solo puede contener letras,
-                      números y guiones bajos.
+                      El nombre de usuario debe tener entre 1 y 20 caracteres y solo puede contener letras, números y guiones bajos.
                     </p>
                   </div>
 
@@ -146,9 +130,7 @@ const Register: React.FC = () => {
                     <input
                       id="email"
                       type="email"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
                       placeholder="name@company.com"
                       {...register('email', {
                         required: 'El correo electrónico es obligatorio',
@@ -168,9 +150,7 @@ const Register: React.FC = () => {
                     <input
                       id="telefono"
                       type="tel"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
                       placeholder="1234567890"
                       {...register('telefono', {
                         required: 'El teléfono es obligatorio',
@@ -193,9 +173,7 @@ const Register: React.FC = () => {
                     <input
                       id="direccion"
                       type="text"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
                       placeholder="Ingresa tu dirección"
                       {...register('direccion', {
                         required: 'La dirección es obligatoria',
@@ -219,9 +197,7 @@ const Register: React.FC = () => {
                       <input
                         id="password"
                         type={showPassword ? 'text' : 'password'}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                   focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 pr-10
-                                   dark:bg-gray-700 dark:border-gray-600"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600"
                         placeholder="••••••••"
                         {...register('password', {
                           required: 'La contraseña es obligatoria',
@@ -246,23 +222,17 @@ const Register: React.FC = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="password_confirmation"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <label htmlFor="password_confirmation" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                       Confirmar Contraseña
                     </label>
                     <input
                       id="password_confirmation"
                       type="password"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
                       placeholder="••••••••"
                       {...register('password_confirmation', {
                         required: 'Debes confirmar tu contraseña',
-                        validate: (value) =>
-                          value === watchPassword || 'Las contraseñas no coinciden',
+                        validate: (value) => value === watchPassword || 'Las contraseñas no coinciden',
                       })}
                     />
                     {errors.password_confirmation && (
@@ -271,20 +241,13 @@ const Register: React.FC = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="preguntaSecreta"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <label htmlFor="preguntaSecreta" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                       Pregunta Secreta
                     </label>
                     <select
                       id="preguntaSecreta"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
-                      {...register('preguntaSecreta', {
-                        required: 'La pregunta secreta es obligatoria',
-                      })}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
+                      {...register('preguntaSecreta', { required: 'La pregunta secreta es obligatoria' })}
                     >
                       <option value="">Seleccione una pregunta</option>
                       <option value="1">¿Cuál es el nombre de tu primera mascota?</option>
@@ -299,18 +262,13 @@ const Register: React.FC = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="respuestaSecreta"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <label htmlFor="respuestaSecreta" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                       Respuesta Secreta
                     </label>
                     <input
                       id="respuestaSecreta"
                       type="text"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                                 focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5
-                                 dark:bg-gray-700 dark:border-gray-600"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
                       placeholder="Ingresa tu respuesta"
                       {...register('respuestaSecreta', {
                         required: 'La respuesta secreta es obligatoria',
@@ -329,8 +287,7 @@ const Register: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium
-                           rounded-lg text-sm px-5 py-2.5 text-center"
+                className="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
                 Crear cuenta
               </button>
@@ -346,6 +303,47 @@ const Register: React.FC = () => {
       </section>
 
       <Footer />
+
+      {/* Modal de alerta de éxito para registro */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
+          {/* Fondo semitransparente */}
+          <div className="fixed inset-0 bg-black opacity-50"></div>
+          <div className="relative p-4 w-full max-w-md h-full md:h-auto">
+            <div className="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                </svg>
+                <span className="sr-only">Cerrar modal</span>
+              </button>
+              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 p-2 flex items-center justify-center mx-auto mb-3.5">
+                <svg aria-hidden="true" className="w-8 h-8 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                </svg>
+                <span className="sr-only">Success</span>
+              </div>
+              <p className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+                Usuario registrado exitosamente.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  navigate('/login');
+                }}
+                className="py-2 px-3 text-sm font-medium text-center text-white rounded-lg bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:focus:ring-primary-900"
+              >
+                Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

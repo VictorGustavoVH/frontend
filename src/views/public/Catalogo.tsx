@@ -250,14 +250,14 @@ const Catalogo: React.FC = () => {
                   <Link 
                     to={`/products/${encodeURIComponent(product.name)}`} 
                     key={product.name} 
-                    className="block"
+                    className="block no-underline focus:outline-none"
                   >
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col transform transition duration-300 hover:scale-105">
                       {product.image && (
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-48 object-cover transition-opacity duration-500 ease-in-out"
+                          className="w-full h-48 object-contain transition-opacity duration-500 ease-in-out"
                           onError={(e) => {
                             e.currentTarget.src = 'https://via.placeholder.com/150';
                           }}
