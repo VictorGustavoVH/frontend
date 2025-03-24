@@ -16,21 +16,21 @@ interface Product {
 const Catalogo: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
 
-  // ESTADOS PARA BÚSQUEDA Y FILTROS
+  // Estados para búsqueda y filtros
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('');
   const [minPrice, setMinPrice] = useState<number | ''>('');
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
-  // ESTADO PARA MOSTRAR/OCULTAR EL MENÚ DE FILTROS
+  // Estados para mostrar/ocultar dropdowns
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
 
-  // PAGINACIÓN
+  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9; // o el número que prefieras
 
-  // OBTENER PRODUCTOS AL MONTAR
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -43,19 +43,20 @@ const Catalogo: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // MANEJADORES DE CAMBIO
+  // Manejadores
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
 
   const handleCategoryClick = (categoryValue: string) => {
-    // Si ya está seleccionada la categoría, al volver a presionar la limpiamos
+    // Si ya está seleccionada la categoría, limpiamos al volver a presionar
     if (selectedCategory === categoryValue) {
       setSelectedCategory('');
     } else {
       setSelectedCategory(categoryValue);
     }
+    setShowCategoryMenu(false); // Cerramos el menú
     setCurrentPage(1);
   };
 
@@ -76,7 +77,7 @@ const Catalogo: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // LÓGICA DE FILTRO
+  // Filtrado
   const filteredProducts = products.filter((product) => {
     // Búsqueda por nombre
     const matchSearch = searchQuery
@@ -104,7 +105,7 @@ const Catalogo: React.FC = () => {
     return matchSearch && matchCategory && matchBrand && matchPrice;
   });
 
-  // PAGINACIÓN
+  // Paginación
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -114,10 +115,8 @@ const Catalogo: React.FC = () => {
     setCurrentPage(page);
   };
 
-  // OBTENER LAS CATEGORÍAS ÚNICAS
+  // Listas únicas de categorías y marcas
   const categoryOptions = Array.from(new Set(products.map((p) => p.category))).filter(Boolean);
-
-  // OBTENER MARCAS ÚNICAS
   const brandOptions = Array.from(new Set(products.map((p) => p.brand))).filter(Boolean);
 
   return (
@@ -125,69 +124,73 @@ const Catalogo: React.FC = () => {
       <Header />
 
       <div className="max-w-7xl mx-auto p-6">
-        {/* BARRA DE BÚSQUEDA */}
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Buscar productos..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
+        {/* Fila con Buscador, Botón Categoría, Botón Filtros (todo en línea) */}
+        <div className="flex items-center space-x-4 mb-6">
+          {/* Buscador */}
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
 
-        {/* BOTONES DE CATEGORÍA Y FILTROS */}
-        <div className="flex gap-4 mb-6">
-          {/* BOTÓN CATEGORÍA: en vez de select, puede ser un menú o un listado */}
+          {/* BOTÓN CATEGORÍA */}
           <div className="relative">
             <button
               onClick={() => {
-                // Si solo quieres un botón genérico, puedes mostrar un menú.
-                // Aquí muestro un dropdown con las categorías.
+                setShowCategoryMenu(!showCategoryMenu);
+                setShowFilterMenu(false); // Cerramos el otro menú si está abierto
               }}
               className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             >
               Categoría
             </button>
 
-            {/* SUPONIENDO un dropdown flotante con categorías */}
-            <div className="absolute mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-10">
-              {categoryOptions.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => handleCategoryClick(cat)}
-                  className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                    selectedCategory === cat ? 'bg-gray-100 font-semibold' : ''
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-              {categoryOptions.length > 0 && (
-                <button
-                  onClick={() => handleCategoryClick('')} // para resetear
-                  className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                    selectedCategory === '' ? 'bg-gray-100 font-semibold' : ''
-                  }`}
-                >
-                  Todas
-                </button>
-              )}
-            </div>
+            {showCategoryMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-10">
+                {categoryOptions.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategoryClick(cat)}
+                    className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                      selectedCategory === cat ? 'bg-gray-100 font-semibold' : ''
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+                {/* Opción "Todas" */}
+                {categoryOptions.length > 0 && (
+                  <button
+                    onClick={() => handleCategoryClick('')}
+                    className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                      selectedCategory === '' ? 'bg-gray-100 font-semibold' : ''
+                    }`}
+                  >
+                    Todas
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* BOTÓN FILTROS: oculta/muestra un dropdown con marca, precio, etc. */}
+          {/* BOTÓN FILTROS */}
           <div className="relative">
             <button
-              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              onClick={() => {
+                setShowFilterMenu(!showFilterMenu);
+                setShowCategoryMenu(false); // Cierra menú de categorías si está abierto
+              }}
               className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             >
               Filtros
             </button>
 
-            {/* MENÚ DESPLEGABLE DE FILTROS */}
             {showFilterMenu && (
-              <div className="absolute mt-2 w-64 bg-white border border-gray-200 rounded shadow-lg p-4 z-10">
+              <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded shadow-lg p-4 z-10">
                 <div className="mb-4">
                   <label className="block mb-1 font-semibold text-sm">Marca</label>
                   <select
@@ -234,7 +237,10 @@ const Catalogo: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentProducts.length > 0 ? (
             currentProducts.map((product) => (
-              <div key={product.name} className="bg-white shadow-lg rounded-lg overflow-hidden">
+              <div
+                key={product.name}
+                className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col"
+              >
                 {product.image && (
                   <img
                     src={product.image}
@@ -242,7 +248,7 @@ const Catalogo: React.FC = () => {
                     className="w-full h-48 object-cover"
                   />
                 )}
-                <div className="p-4">
+                <div className="p-4 flex flex-col flex-grow">
                   <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
                   {product.brand && (
                     <p className="text-sm text-gray-600">
@@ -255,7 +261,7 @@ const Catalogo: React.FC = () => {
                     </p>
                   )}
 
-                  <div className="mt-4">
+                  <div className="mt-auto pt-4">
                     <Link to={`/products/${encodeURIComponent(product.name)}`}>
                       <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
                         Ver detalle
