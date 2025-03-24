@@ -168,12 +168,7 @@ const ProductDetail: React.FC = () => {
                 </p>
               )}
 
-              {/* Texto extra (opcional) */}
-              <p className="text-gray-500 dark:text-gray-400 transition-all duration-300">
-                (Ejemplo) Este producto cuenta con la mejor calidad del mercado...
-                <br />
-                Asegúrate de verificar todas sus especificaciones antes de comprar.
-              </p>
+            
             </div>
           </div>
         </div>

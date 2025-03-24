@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -235,10 +235,11 @@ const Catalogo: React.FC = () => {
           </div>
         </div>
 
-        {/* Vista de carga */}
+        {/* Vista de carga mejorada */}
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <FaSpinner className="animate-spin text-4xl text-blue-500" />
+          <div className="flex flex-col justify-center items-center min-h-[400px]">
+            <FaSpinner className="animate-spin text-6xl text-blue-500 mb-4" />
+            <p className="text-xl text-gray-600">Cargando productos...</p>
           </div>
         ) : (
           <>
@@ -246,41 +247,37 @@ const Catalogo: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all">
               {currentProducts.length > 0 ? (
                 currentProducts.map((product) => (
-                  <div
-                    key={product.name}
-                    className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col transform transition duration-300 hover:scale-105"
+                  <Link 
+                    to={`/products/${encodeURIComponent(product.name)}`} 
+                    key={product.name} 
+                    className="block"
                   >
-                    {product.image && (
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-48 object-cover transition-opacity duration-500 ease-in-out"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://via.placeholder.com/150';
-                        }}
-                      />
-                    )}
-                    <div className="p-4 flex flex-col flex-grow">
-                      <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
-                      {product.brand && (
-                        <p className="text-sm text-gray-600">
-                          <strong>Marca:</strong> {product.brand}
-                        </p>
+                    <div className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col transform transition duration-300 hover:scale-105">
+                      {product.image && (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-48 object-cover transition-opacity duration-500 ease-in-out"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/150';
+                          }}
+                        />
                       )}
-                      {typeof product.price === 'number' && (
-                        <p className="text-sm text-gray-600">
-                          <strong>Precio:</strong> ${product.price.toFixed(2)}
-                        </p>
-                      )}
-                      <div className="mt-auto pt-4">
-                        <Link to={`/products/${encodeURIComponent(product.name)}`}>
-                          <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                            Ver detalle
-                          </button>
-                        </Link>
+                      <div className="p-4 flex flex-col flex-grow">
+                        <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+                        {product.brand && (
+                          <p className="text-sm text-gray-600">
+                            <strong>Marca:</strong> {product.brand}
+                          </p>
+                        )}
+                        {typeof product.price === 'number' && (
+                          <p className="text-sm text-gray-600">
+                            <strong>Precio:</strong> ${product.price.toFixed(2)}
+                          </p>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <p className="text-center text-gray-500">No se encontraron productos.</p>
