@@ -12,7 +12,7 @@ import Inicio from './views/public/Inicio';
 import RegisterProduct from './views/private/RegisterProductView';
 import RegisterDeviceView from './views/private/RegisterDeviceView';
 import ProtectedRoute from './components/ProtectedRoute';
-import DetalleProducto from './views/private/DetalleProducto';
+import ProductDetail from './views/private/ProductDetail';
 import SmartViewDashboard from './views/private/SmartViewDashboard';
 import LinkTreeView from './views/private/LinkTreeView';
 import ProfileView from './views/private/UserProfileForm';
@@ -54,7 +54,7 @@ export default function Router() {
         {/* Rutas públicas */}
         <Route path="/" element={<HomeView />} />
         <Route path="/products" element={<Catalogo />} />
-        <Route path="/products/:name" element={<DetalleProducto />} />
+        <Route path="/products/:name" element={<ProductDetail />} />
         <Route path="/preguntasFrecuentes" element={<PreguntasFrecuente />} />
         <Route path="/quienes-somos" element={<BodyContent />} />
         <Route path="/contenido" element={<BodyContent />} />
