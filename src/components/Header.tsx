@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import SmartViewImage from '../assets/SmartView.png';
 import AdminNavigation from "./nav/AdminNavigation";
 import HomeNavigation from "./nav/HomeNavigation";
-import { FaUserCircle, FaBars, FaTimes, FaShoppingCart } from "react-icons/fa"; // Iconos
+import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa"; // Eliminamos FaShoppingCart, pues ya no se usa aquí
 
 // Interfaz del usuario
 interface User {
@@ -68,7 +68,10 @@ const Header = () => {
         {/* Botón de menú para móvil */}
         <button
           onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-          className="inline-flex items-center p-2 text-base text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 transition-colors duration-300"
+          className="inline-flex items-center p-2 text-base text-gray-500 rounded-lg md:hidden
+                     hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200
+                     dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600
+                     transition-colors duration-300"
         >
           {isMobileNavOpen ? <FaTimes /> : <FaBars />}
         </button>
@@ -79,22 +82,19 @@ const Header = () => {
             <Link
               key={path}
               to={path}
-              className="text-gray-900 px-4 py-2 rounded-md text-base font-medium transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
+              className="text-gray-900 px-4 py-2 rounded-md text-base font-medium
+                         transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
             >
               {label}
             </Link>
           ))}
 
-          {/* 
-            Aquí se QUITA el enlace duplicado de Carrito para evitar la doble aparición.
-            Si deseas que aparezca aquí en vez de en el menú de usuario, coméntalo en el otro bloque.
-          */}
-
           {/* Dropdown "Acerca de" */}
           <div className="relative">
             <button
               onClick={() => setIsAboutOpen(!isAboutOpen)}
-              className="text-gray-900 px-4 py-2 rounded-md text-base font-medium flex items-center transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
+              className="text-gray-900 px-4 py-2 rounded-md text-base font-medium flex items-center
+                         transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
             >
               Acerca de
               <svg
@@ -111,9 +111,9 @@ const Header = () => {
               </svg>
             </button>
             <div
-              className={`absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right transition-all duration-300 ${
-                isAboutOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
-              }`}
+              className={`absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right
+                          transition-all duration-300
+                          ${isAboutOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
             >
               <ul className="space-y-3">
                 {ABOUT_LINKS.map(({ label, path }) => (
@@ -135,28 +135,23 @@ const Header = () => {
         <div className="flex md:order-2 space-x-4 items-center">
           {user ? (
             <>
+              {/* Dependiendo del rol, mostramos AdminNavigation o HomeNavigation.
+                  El link "Carrito" está solo en HomeNavigation.tsx */}
               {user.role === "admin" ? <AdminNavigation /> : <HomeNavigation />}
-
-              {/* Enlace Carrito SOLO si el usuario está logueado */}
-              <Link
-                to="/cart"
-                className="flex items-center text-gray-900 px-4 py-2 rounded-md text-base font-medium transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
-              >
-                <FaShoppingCart className="mr-2" /> Carrito
-              </Link>
 
               {/* Menú de perfil */}
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="text-gray-900 hover:text-blue-500 flex items-center transition-transform duration-300 hover:scale-105"
+                  className="text-gray-900 hover:text-blue-500 flex items-center
+                             transition-transform duration-300 hover:scale-105"
                 >
                   <FaUserCircle className="text-2xl" />
                 </button>
                 <div
-                  className={`absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right transition-all duration-300 ${
-                    isProfileOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
-                  }`}
+                  className={`absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right
+                              transition-all duration-300
+                              ${isProfileOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
                 >
                   <ul className="space-y-3">
                     <li>
@@ -183,13 +178,15 @@ const Header = () => {
             <>
               <Link
                 to="/login"
-                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition-transform duration-300 hover:scale-105 text-base font-medium"
+                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg
+                           transition-transform duration-300 hover:scale-105 text-base font-medium"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition-transform duration-300 hover:scale-105 text-base font-medium"
+                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg
+                           transition-transform duration-300 hover:scale-105 text-base font-medium"
               >
                 Regístrate
               </Link>
@@ -200,9 +197,9 @@ const Header = () => {
 
       {/* Menú Móvil */}
       <div
-        className={`md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 shadow-md overflow-hidden transition-all duration-300 ${
-          isMobileNavOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 pointer-events-none"
-        }`}
+        className={`md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 shadow-md
+                    overflow-hidden transition-all duration-300
+                    ${isMobileNavOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
         id="mobile-menu"
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -211,28 +208,20 @@ const Header = () => {
               key={path}
               to={path}
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100 transition-transform duration-300 hover:scale-105"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100
+                         transition-transform duration-300 hover:scale-105"
             >
               {label}
             </Link>
           ))}
 
-          {/* Enlace Carrito en móvil, SOLO si user está logueado */}
-          {user && (
-            <Link
-              to="/cart"
-              onClick={() => setIsMobileNavOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100 transition-transform duration-300 hover:scale-105 flex items-center"
-            >
-              <FaShoppingCart className="mr-2" /> Carrito
-            </Link>
-          )}
-
           {/* Dropdown "Acerca de" en móvil */}
           <div className="relative">
             <button
               onClick={() => setIsAboutOpen(!isAboutOpen)}
-              className="flex items-center w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100 transition-transform duration-300 hover:scale-105"
+              className="flex items-center w-full text-left px-3 py-2 rounded-md
+                         text-base font-medium text-gray-900 hover:bg-gray-100
+                         transition-transform duration-300 hover:scale-105"
             >
               Acerca de
               <svg
@@ -249,9 +238,9 @@ const Header = () => {
               </svg>
             </button>
             <div
-              className={`mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 origin-top transition-all duration-300 transform ${
-                isAboutOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
-              }`}
+              className={`mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 origin-top
+                          transition-all duration-300 transform
+                          ${isAboutOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
             >
               <ul className="space-y-3 p-3">
                 {ABOUT_LINKS.map(({ label, path }) => (
@@ -275,16 +264,22 @@ const Header = () => {
           {/* Menú de usuario en móvil */}
           {user ? (
             <div className="mt-4 flex flex-col space-y-2 px-3">
+              {/* HomeNavigation se encarga del carrito, no lo duplicamos aquí */}
               <Link
                 to="/perfil"
-                className="block text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-base font-medium"
+                className="block text-gray-600 hover:text-indigo-600 transition-colors duration-200
+                           text-base font-medium"
                 onClick={() => setIsMobileNavOpen(false)}
               >
                 Actualizar datos
               </Link>
               <button
-                onClick={handleLogout}
-                className="block text-red-500 hover:text-red-700 w-full text-left text-base font-medium transition-colors duration-200"
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileNavOpen(false);
+                }}
+                className="block text-red-500 hover:text-red-700 w-full text-left text-base font-medium
+                           transition-colors duration-200"
               >
                 Cerrar sesión
               </button>
@@ -293,14 +288,18 @@ const Header = () => {
             <div className="space-y-2 mt-4 px-3">
               <Link
                 to="/login"
-                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-center transition-transform duration-300 hover:scale-105 text-base font-medium"
+                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg
+                           text-center transition-transform duration-300 hover:scale-105
+                           text-base font-medium"
                 onClick={() => setIsMobileNavOpen(false)}
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-center transition-transform duration-300 hover:scale-105 text-base font-medium"
+                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg
+                           text-center transition-transform duration-300 hover:scale-105
+                           text-base font-medium"
                 onClick={() => setIsMobileNavOpen(false)}
               >
                 Regístrate
