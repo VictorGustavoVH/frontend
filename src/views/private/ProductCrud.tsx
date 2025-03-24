@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   getProducts,
-  registerProduct,
+ 
   uploadProductImage,
   updateProduct as apiUpdateProduct,
   deleteProduct as apiDeleteProduct
