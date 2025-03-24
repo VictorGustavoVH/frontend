@@ -5,7 +5,7 @@ import AdminNavigation from "./nav/AdminNavigation";
 import HomeNavigation from "./nav/HomeNavigation";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa"; // Iconos
 
-// Definir la interfaz para el usuario
+// Interfaz del usuario
 interface User {
   role: "admin" | "user";
 }
@@ -27,6 +27,7 @@ const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
+  // Cargar usuario desde localStorage
   useEffect(() => {
     const loadUser = () => {
       try {
@@ -56,55 +57,42 @@ const Header = () => {
   return (
     <nav className="bg-white dark:bg-gray-900 sticky top-0 z-20 border-b border-gray-200 dark:border-gray-600 shadow-md">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-
         {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
+        <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img src={SmartViewImage} className="h-8" alt="SmartView Logo" />
         </Link>
 
         {/* Botón de menú para móvil */}
         <button
           onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-          className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden
-                     hover:bg-gray-100 focus:outline-none focus:ring-2
-                     focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:focus:ring-gray-600 transition-colors duration-300"
+          className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 transition-colors duration-300"
         >
           {isMobileNavOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* --- Enlaces Desktop --- */}
+        {/* Enlaces Desktop */}
         <div className="hidden md:flex md:ml-auto md:space-x-8 items-center">
           {NAV_LINKS.map(({ label, path }) => (
             <Link
               key={path}
               to={path}
-              className="text-gray-900 px-4 py-2 rounded-md text-sm font-medium
-                         transition-transform duration-300 hover:scale-105
-                         hover:bg-gray-100"
+              className="text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
             >
               {label}
             </Link>
           ))}
-
-          {/* Dropdown 'Acerca de' */}
+          {/* Dropdown "Acerca de" */}
           <div className="relative">
             <button
               onClick={() => setIsAboutOpen(!isAboutOpen)}
-              className="text-gray-900 px-4 py-2 rounded-md text-sm font-medium flex items-center
-                         transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
+              className="text-gray-900 px-4 py-2 rounded-md text-sm font-medium flex items-center transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
             >
               Acerca de
               <svg
                 className="ml-2 h-5 w-5 transition-transform duration-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                style={{
-                  transform: isAboutOpen ? "rotate(180deg)" : "rotate(0deg)",
-                }}
+                style={{ transform: isAboutOpen ? "rotate(180deg)" : "rotate(0deg)" }}
               >
                 <path
                   fillRule="evenodd"
@@ -113,15 +101,10 @@ const Header = () => {
                 />
               </svg>
             </button>
-            {/* Animación de apertura/cierre */}
             <div
-              className={`absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right
-                          transform transition-all duration-300
-                          ${
-                            isAboutOpen
-                              ? "opacity-100 scale-100"
-                              : "opacity-0 scale-95 pointer-events-none"
-                          }`}
+              className={`absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right transition-all duration-300 ${
+                isAboutOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+              }`}
             >
               <ul className="space-y-3">
                 {ABOUT_LINKS.map(({ label, path }) => (
@@ -139,30 +122,22 @@ const Header = () => {
           </div>
         </div>
 
-        {/* --- Menú de usuario (Login, Registrar o Admin/User nav) --- */}
+        {/* Menú de usuario */}
         <div className="flex md:order-2 space-x-4 items-center">
           {user ? (
             <>
               {user.role === "admin" ? <AdminNavigation /> : <HomeNavigation />}
-
-              {/* Menú de perfil */}
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="text-gray-900 hover:text-blue-500 flex items-center
-                             transition-transform duration-300 hover:scale-105"
+                  className="text-gray-900 hover:text-blue-500 flex items-center transition-transform duration-300 hover:scale-105"
                 >
                   <FaUserCircle className="text-2xl" />
                 </button>
-
                 <div
-                  className={`absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right
-                              transform transition-all duration-300
-                              ${
-                                isProfileOpen
-                                  ? "opacity-100 scale-100"
-                                  : "opacity-0 scale-95 pointer-events-none"
-                              }`}
+                  className={`absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 origin-top-right transition-all duration-300 ${
+                    isProfileOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+                  }`}
                 >
                   <ul className="space-y-3">
                     <li>
@@ -189,15 +164,13 @@ const Header = () => {
             <>
               <Link
                 to="/login"
-                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg
-                           transition-transform duration-300 hover:scale-105"
+                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition-transform duration-300 hover:scale-105"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg
-                           transition-transform duration-300 hover:scale-105"
+                className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition-transform duration-300 hover:scale-105"
               >
                 Regístrate
               </Link>
@@ -206,49 +179,35 @@ const Header = () => {
         </div>
       </div>
 
-      {/* --- Menú Móvil --- */}
-      {/* Al abrir, aplicamos transición en la opacidad y el escalado para dar efecto de 'fade+slide' */}
+      {/* Menú Móvil */}
       <div
-        className={`md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 shadow-md
-                    transform transition-all duration-300 origin-top
-                    ${
-                      isMobileNavOpen
-                        ? "max-h-screen opacity-100 scale-100"
-                        : "max-h-0 opacity-0 scale-95 pointer-events-none"
-                    }`}
+        className={`md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 shadow-md overflow-hidden transition-all duration-300 ${
+          isMobileNavOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+        }`}
         id="mobile-menu"
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          {/* Enlaces principales */}
           {NAV_LINKS.map(({ label, path }) => (
             <Link
               key={path}
               to={path}
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900
-                         hover:bg-gray-100 transition-transform duration-300 hover:scale-105"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100 transition-transform duration-300 hover:scale-105"
             >
               {label}
             </Link>
           ))}
-
-          {/* Dropdown Acerca de en móvil */}
           <div className="relative">
             <button
               onClick={() => setIsAboutOpen(!isAboutOpen)}
-              className="flex items-center w-full text-left px-3 py-2
-                         rounded-md text-base font-medium text-gray-900
-                         hover:bg-gray-100
-                         transition-transform duration-300 hover:scale-105"
+              className="flex items-center w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100 transition-transform duration-300 hover:scale-105"
             >
               Acerca de
               <svg
                 className="ml-2 h-5 w-5 transition-transform duration-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                style={{
-                  transform: isAboutOpen ? "rotate(180deg)" : "rotate(0deg)",
-                }}
+                style={{ transform: isAboutOpen ? "rotate(180deg)" : "rotate(0deg)" }}
               >
                 <path
                   fillRule="evenodd"
@@ -257,27 +216,21 @@ const Header = () => {
                 />
               </svg>
             </button>
-
             <div
-              className={`mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 origin-top
-                          transition-all duration-300 transform
-                          ${
-                            isAboutOpen
-                              ? "opacity-100 scale-100"
-                              : "opacity-0 scale-95 pointer-events-none"
-                          }`}
+              className={`mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 origin-top transition-all duration-300 transform ${
+                isAboutOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+              }`}
             >
               <ul className="space-y-3 p-3">
                 {ABOUT_LINKS.map(({ label, path }) => (
                   <li key={path}>
                     <Link
                       to={path}
-                      className="text-gray-600 hover:text-indigo-600 block
-                                 transition-colors duration-200"
                       onClick={() => {
                         setIsMobileNavOpen(false);
                         setIsAboutOpen(false);
                       }}
+                      className="text-gray-600 hover:text-indigo-600 block transition-colors duration-200"
                     >
                       {label}
                     </Link>
@@ -286,8 +239,6 @@ const Header = () => {
               </ul>
             </div>
           </div>
-
-          {/* Enlaces de usuario en móvil */}
           {user ? (
             <>
               <div className="mt-4 flex items-center space-x-2 px-3">
@@ -303,8 +254,7 @@ const Header = () => {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block text-red-500 hover:text-red-700 w-full text-left mt-2
-                             transition-colors duration-200"
+                  className="block text-red-500 hover:text-red-700 w-full text-left mt-2 transition-colors duration-200"
                 >
                   Cerrar sesión
                 </button>
@@ -314,16 +264,14 @@ const Header = () => {
             <div className="space-y-2 mt-4 px-3">
               <Link
                 to="/login"
-                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-center
-                           transition-transform duration-300 hover:scale-105"
+                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-center transition-transform duration-300 hover:scale-105"
                 onClick={() => setIsMobileNavOpen(false)}
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-center
-                           transition-transform duration-300 hover:scale-105"
+                className="block text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-center transition-transform duration-300 hover:scale-105"
                 onClick={() => setIsMobileNavOpen(false)}
               >
                 Regístrate
