@@ -6,7 +6,7 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
 export type Product = {
-  _id?: string; // <- opcional, para referenciar el documento de Mongo
+  _id?: string;
   name: string;
   description: string;
   category: string;
@@ -16,35 +16,54 @@ export type Product = {
   stock?: number;
 };
 
+type FormData = Product & {
+  newCategory?: string;
+  imageFile: FileList;
+};
+
 const RegisterProduct = () => {
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
-  } = useForm<Product>();
+  } = useForm<FormData>();
 
-  const handleRegisterProduct = async (formData: Product) => {
+  const selectedCategory = watch("category");
+
+  const handleRegisterProduct = async (data: FormData) => {
     try {
-      // 1) Crear el producto
-      const resp = await api.post('/admin/product/register', formData);
-      // Revisa si el backend te retornó "slug"
-      const slugName = resp.data.slug; // "MiProducto"
-      
-      // 2) Subir imagen si existe
-      const imageInput = document.getElementById('image') as HTMLInputElement;
-      if (imageInput?.files && imageInput.files[0]) {
-        const imageFile = imageInput.files[0];
-        const imageFormData = new FormData();
-        imageFormData.append('file', imageFile);
-  
-        // Asegúrate de enviar el slug que usó la BD
-        imageFormData.append('name', slugName);
-  
-        const { data } = await api.post('/product/image', imageFormData);
-        toast.success(String(data));
+      // Manejo de categoría
+      const category = selectedCategory === "Otra" 
+        ? data.newCategory 
+        : selectedCategory;
+
+      if (!category) {
+        toast.error('Seleccione o ingrese una categoría');
+        return;
       }
-  
+
+      // Crear el producto
+      const productData = {
+        ...data,
+        category,
+        image: "" // La imagen se actualizará después
+      };
+
+      const resp = await api.post('/admin/product/register', productData);
+      const slugName = resp.data.slug;
+
+      // Subir imagen
+      if (data.imageFile && data.imageFile[0]) {
+        const imageFormData = new FormData();
+        imageFormData.append('file', data.imageFile[0]);
+        imageFormData.append('name', slugName);
+
+        await api.post('/product/image', imageFormData);
+      }
+
       toast.success('Producto registrado correctamente');
       reset();
     } catch (error) {
@@ -56,114 +75,186 @@ const RegisterProduct = () => {
       }
     }
   };
-  
 
   return (
     <div>
       <Header />
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
-          <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
-            Registrar Producto
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-2xl">
+          <h2 className="text-3xl font-bold text-center text-blue-600 mb-8">
+            Registrar Nuevo Producto
           </h2>
 
-          <form onSubmit={handleSubmit(handleRegisterProduct)} className="space-y-5">
+          <form 
+            onSubmit={handleSubmit(handleRegisterProduct)}
+            className="space-y-6"
+          >
             {/* Nombre */}
             <div>
-              <label htmlFor="name" className="block text-lg font-medium text-blue-700">
-                Nombre del Producto
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Nombre del Producto *
               </label>
               <input
-                id="name"
                 type="text"
-                placeholder="Nombre del producto"
-                className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
-                {...register('name', { required: 'El nombre es obligatorio' })}
+                className={`input ${errors.name ? 'input-error' : 'input-primary'}`}
+                placeholder="Ej: Smartphone X12"
+                {...register('name', {
+                  required: 'Este campo es obligatorio',
+                  minLength: {
+                    value: 3,
+                    message: 'Mínimo 3 caracteres'
+                  }
+                })}
               />
               {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name.message}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
               )}
             </div>
 
             {/* Descripción */}
             <div>
-              <label htmlFor="description" className="block text-lg font-medium text-blue-700">
-                Descripción
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Descripción *
               </label>
               <textarea
-                id="description"
-                placeholder="Descripción del producto"
-                className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
-                {...register('description', { required: 'La descripción es obligatoria' })}
+                className={`textarea ${errors.description ? 'textarea-error' : 'textarea-primary'}`}
+                placeholder="Descripción detallada del producto"
+                rows={4}
+                {...register('description', {
+                  required: 'Este campo es obligatorio',
+                  minLength: {
+                    value: 10,
+                    message: 'Mínimo 10 caracteres'
+                  }
+                })}
               />
               {errors.description && (
-                <p className="text-red-500 text-sm">{errors.description.message}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
               )}
             </div>
 
             {/* Categoría */}
             <div>
-              <label htmlFor="category" className="block text-lg font-medium text-blue-700">
-                Categoría
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Categoría *
               </label>
-              <input
-                id="category"
-                type="text"
-                placeholder="Categoría del producto"
-                className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
-                {...register('category', { required: 'La categoría es obligatoria' })}
-              />
-              {errors.category && (
-                <p className="text-red-500 text-sm">{errors.category.message}</p>
+              <select
+                className={`select ${errors.category ? 'select-error' : 'select-primary'} w-full`}
+                {...register('category', {
+                  required: 'Seleccione una categoría'
+                })}
+                onChange={(e) => {
+                  if (e.target.value !== "Otra") {
+                    setValue('newCategory', '');
+                  }
+                }}
+              >
+                <option value="">Seleccione...</option>
+                <option value="Electrónica">Electrónica</option>
+                <option value="Hogar">Hogar</option>
+                <option value="Deportes">Deportes</option>
+                <option value="Otra">Otra categoría</option>
+              </select>
+              
+              {selectedCategory === "Otra" && (
+                <div className="mt-4">
+                  <input
+                    type="text"
+                    className={`input ${errors.newCategory ? 'input-error' : 'input-primary'} w-full`}
+                    placeholder="Ingrese nueva categoría"
+                    {...register('newCategory', {
+                      required: 'Ingrese la nueva categoría'
+                    })}
+                  />
+                  {errors.newCategory && (
+                    <p className="text-red-500 text-sm mt-1">{errors.newCategory.message}</p>
+                  )}
+                </div>
               )}
+            </div>
+
+            {/* Precio y Stock */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Precio (USD)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className={`input ${errors.price ? 'input-error' : 'input-primary'}`}
+                  placeholder="0.00"
+                  {...register('price', {
+                    min: {
+                      value: 0.01,
+                      message: 'El precio debe ser mayor a 0'
+                    }
+                  })}
+                />
+                {errors.price && (
+                  <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  className={`input ${errors.stock ? 'input-error' : 'input-primary'}`}
+                  placeholder="Cantidad disponible"
+                  {...register('stock', {
+                    valueAsNumber: true,
+                    min: {
+                      value: 0,
+                      message: 'El stock no puede ser negativo'
+                    }
+                  })}
+                />
+                {errors.stock && (
+                  <p className="text-red-500 text-sm mt-1">{errors.stock.message}</p>
+                )}
+              </div>
             </div>
 
             {/* Marca */}
             <div>
-              <label htmlFor="brand" className="block text-lg font-medium text-blue-700">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
                 Marca
               </label>
               <input
-                id="brand"
                 type="text"
-                placeholder="Marca del producto"
-                className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
+                className="input input-primary w-full"
+                placeholder="Ej: Sony, Samsung, etc."
                 {...register('brand')}
-              />
-            </div>
-
-            {/* Precio */}
-            <div>
-              <label htmlFor="price" className="block text-lg font-medium text-blue-700">
-                Precio
-              </label>
-              <input
-                id="price"
-                type="number"
-                step="0.01"
-                placeholder="Precio en USD"
-                className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
-                {...register('price', { valueAsNumber: true })}
               />
             </div>
 
             {/* Imagen */}
             <div>
-              <label className="block text-lg font-medium text-blue-700">Subir Imagen</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Imagen del Producto *
+              </label>
               <input
-                id="image"
                 type="file"
                 accept="image/*"
-                className="w-full p-3 mt-1 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-400"
+                className={`file-input w-full ${errors.imageFile ? 'file-input-error' : 'file-input-primary'}`}
+                {...register('imageFile', {
+                  required: 'La imagen es obligatoria'
+                })}
               />
+              {errors.imageFile && (
+                <p className="text-red-500 text-sm mt-1">{errors.imageFile.message}</p>
+              )}
             </div>
 
-            {/* Botón */}
+            {/* Botón de envío */}
             <button
               type="submit"
-              className="w-full py-3 mt-5 text-white bg-blue-500 rounded-lg hover:bg-blue-600 font-bold text-lg transition duration-300"
+              className="btn btn-primary w-full py-3 text-lg font-bold transition-transform hover:scale-105"
             >
-              REGISTRAR PRODUCTO
+              Registrar Producto
             </button>
           </form>
         </div>
