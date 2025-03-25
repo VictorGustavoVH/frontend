@@ -1,6 +1,5 @@
-// Pagina.tsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../config/axios';
 
 interface PageData {
   quienesSomos: string;
@@ -25,13 +24,12 @@ const GestionPagina: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
 
-  // Define el identificador de la página a gestionar.
-  // Aquí usamos "contenido", pero puedes cambiarlo según convenga.
+  // Identificador de la página a gestionar (ajusta según convenga)
   const paginaName = "contenido";
 
   // Obtener los datos actuales de la página al cargar el componente
   useEffect(() => {
-    axios.get(`/admin/pagina/${paginaName}`)
+    api.get(`/admin/pagina/${paginaName}`)
       .then((res) => {
         setData(prev => ({ ...prev, ...res.data }));
       })
@@ -52,7 +50,7 @@ const GestionPagina: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    axios.patch(`/admin/pagina/${paginaName}`, data)
+    api.patch(`/admin/pagina/${paginaName}`, data)
       .then(() => {
         setMessage("Contenido actualizado correctamente.");
       })
