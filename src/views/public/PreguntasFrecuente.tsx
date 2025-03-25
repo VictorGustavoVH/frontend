@@ -1,6 +1,5 @@
-// PreguntasFrecuentes.tsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../config/axios';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
@@ -17,10 +16,10 @@ const PreguntasFrecuentes: React.FC = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   useEffect(() => {
-    // Endpoint público: /pagina/contenido
-    axios.get('/pagina/contenido')
+    api.get('/pagina/contenido')
       .then(res => {
-        const faqString = res.data.preguntasFrecuentes;
+        // Si el campo preguntasFrecuentes viene vacío, se usa un array vacío.
+        const faqString = res.data.preguntasFrecuentes || "[]";
         try {
           const parsedFaq: FAQSection[] = JSON.parse(faqString);
           setSections(parsedFaq);

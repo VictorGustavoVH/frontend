@@ -1,7 +1,6 @@
-// BodyContent.tsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { motion } from 'framer-motion';
+import api from '../../config/axios';
 import { FaLightbulb, FaCheckCircle, FaLeaf, FaUsers, FaBalanceScale } from "react-icons/fa";
 
 const BodyContent: React.FC = () => {
@@ -13,14 +12,13 @@ const BodyContent: React.FC = () => {
   });
 
   useEffect(() => {
-    // Endpoint público: /pagina/contenido
-    axios.get('/pagina/contenido')
+    api.get('/pagina/contenido')
       .then(res => {
         setContent({
-          quienesSomos: res.data.quienesSomos,
-          mision: res.data.mision,
-          vision: res.data.vision,
-          valores: res.data.valores,
+          quienesSomos: res.data.quienesSomos || '',
+          mision: res.data.mision || '',
+          vision: res.data.vision || '',
+          valores: res.data.valores || '',
         });
       })
       .catch(err => {
