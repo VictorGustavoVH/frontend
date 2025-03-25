@@ -18,7 +18,7 @@ const PreguntasFrecuentes: React.FC = () => {
 
   useEffect(() => {
     // Se hace una petición GET al endpoint que devuelve el documento con el contenido
-    axios.get('/pagina')
+    axios.get('/pagina/contenido')
       .then(res => {
         // Se espera que el campo "preguntasFrecuentes" sea un string JSON
         const faqString = res.data.preguntasFrecuentes;

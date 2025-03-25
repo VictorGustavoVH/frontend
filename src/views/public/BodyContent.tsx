@@ -14,7 +14,7 @@ const BodyContent: React.FC = () => {
 
   useEffect(() => {
     // Se hace la petición al endpoint público que retorna el documento de contenido
-    axios.get('/pagina')
+    axios.get('/pagina/contenido')
       .then(res => {
         setContent({
           quienesSomos: res.data.quienesSomos,
