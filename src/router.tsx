@@ -15,7 +15,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProductDetail from './views/private/ProductDetail';
 import SmartViewDashboard from './views/private/SmartViewDashboard';
 import LinkTreeView from './views/private/LinkTreeView';
-import ProfileView from './views/private/UserProfileForm';
+import UpdateProfile from './views/private/UpdateProfile';
 import UserManagement from './views/private/UserManagement';
 import ProductCrud from './views/private/ProductCrud';
 
@@ -59,7 +59,7 @@ export default function Router() {
         <Route path="/quienes-somos" element={<BodyContent />} />
         <Route path="/contenido" element={<BodyContent />} />
         <Route path="/inicio" element={<Inicio />} />
-        <Route path="/perfil" element={<ProfileView />} />
+        <Route path="/perfil" element={<UpdateProfile />} />
 
         {/* Página 404 */}
         <Route path="/404" element={<AuthLayout />}>

@@ -75,15 +75,5 @@ input:focus {
   font-family: 'Roboto', sans-serif;
 }
 
-/* Enlaces */
-a {
-  color: #007BFF;
-  text-decoration: none;
-  font-size: 12px;
-  font-family: 'Roboto', sans-serif;
-}
 
-a:hover {
-  text-decoration: underline;
-}
 
