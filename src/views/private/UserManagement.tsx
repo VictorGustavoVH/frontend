@@ -19,28 +19,28 @@ interface RoleToggleProps {
 
 const RoleToggle: React.FC<RoleToggleProps> = ({ role, onChange }) => {
   return (
-    <div className="flex items-center border rounded overflow-hidden text-xs">
+    <div className="flex items-center border rounded-md overflow-hidden">
       <button
         onClick={() => role !== 'usuario' && onChange('usuario')}
-        className={`flex items-center px-2 py-1 transition-all duration-300 ${
+        className={`flex items-center px-3 py-1 transition-all duration-300 ${
           role === 'usuario'
             ? 'bg-blue-500 text-white'
             : 'bg-gray-100 text-gray-800 hover:bg-blue-100'
         }`}
       >
-        <FaUser className="mr-1" size={14} />
-        <span>Usr</span>
+        <FaUser className="mr-1" />
+        <span className="text-sm">Usuario</span>
       </button>
       <button
         onClick={() => role !== 'admin' && onChange('admin')}
-        className={`flex items-center px-2 py-1 transition-all duration-300 ${
+        className={`flex items-center px-3 py-1 transition-all duration-300 ${
           role === 'admin'
             ? 'bg-blue-500 text-white'
             : 'bg-gray-100 text-gray-800 hover:bg-blue-100'
         }`}
       >
-        <FaUserShield className="mr-1" size={14} />
-        <span>Adm</span>
+        <FaUserShield className="mr-1" />
+        <span className="text-sm">Admin</span>
       </button>
     </div>
   );

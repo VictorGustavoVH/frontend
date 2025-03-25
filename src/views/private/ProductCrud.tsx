@@ -15,12 +15,6 @@ import {
   FaEdit,
   FaTrash,
   FaEllipsisV,
-  FaImage,
-  FaBoxOpen,
-  FaList,
-  FaTrademark,
-  FaDollarSign,
-  FaCogs,
   FaArrowLeft,
   FaArrowRight
 } from 'react-icons/fa';
@@ -140,24 +134,12 @@ const ProductCrud: React.FC = () => {
           <table className="min-w-full bg-white dark:bg-gray-800">
             <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-200">
               <tr>
-                <th className="px-4 py-3 text-left">
-                  <FaImage className="inline-block mr-1" /> Imagen
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <FaBoxOpen className="inline-block mr-1" /> Nombre
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <FaList className="inline-block mr-1" /> Categoría
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <FaTrademark className="inline-block mr-1" /> Marca
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <FaDollarSign className="inline-block mr-1" /> Precio
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <FaCogs className="inline-block mr-1" /> Acciones
-                </th>
+                <th className="px-4 py-3 text-left">Imagen</th>
+                <th className="px-4 py-3 text-left">Nombre</th>
+                <th className="px-4 py-3 text-left">Categoría</th>
+                <th className="px-4 py-3 text-left">Marca</th>
+                <th className="px-4 py-3 text-left">Precio</th>
+                <th className="px-4 py-3 text-left">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -260,55 +242,77 @@ const ProductCrud: React.FC = () => {
             <h2 className="text-xl mb-4 font-bold">Editar Producto</h2>
             <form onSubmit={handleUpdateProduct} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Nombre</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Nombre
+                </label>
                 <input
                   type="text"
                   value={editProduct.name || ''}
-                  onChange={(e) => setEditProduct({ ...editProduct, name: e.target.value })}
+                  onChange={(e) =>
+                    setEditProduct({ ...editProduct, name: e.target.value })
+                  }
                   required
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Descripción</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Descripción
+                </label>
                 <textarea
                   value={editProduct.description || ''}
-                  onChange={(e) => setEditProduct({ ...editProduct, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditProduct({ ...editProduct, description: e.target.value })
+                  }
                   required
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Categoría</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Categoría
+                </label>
                 <input
                   type="text"
                   value={editProduct.category || ''}
-                  onChange={(e) => setEditProduct({ ...editProduct, category: e.target.value })}
+                  onChange={(e) =>
+                    setEditProduct({ ...editProduct, category: e.target.value })
+                  }
                   required
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Marca</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Marca
+                </label>
                 <input
                   type="text"
                   value={editProduct.brand || ''}
-                  onChange={(e) => setEditProduct({ ...editProduct, brand: e.target.value })}
+                  onChange={(e) =>
+                    setEditProduct({ ...editProduct, brand: e.target.value })
+                  }
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Precio</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Precio
+                </label>
                 <input
                   type="number"
                   step="0.01"
                   value={editProduct.price || ''}
-                  onChange={(e) => setEditProduct({ ...editProduct, price: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setEditProduct({ ...editProduct, price: Number(e.target.value) })
+                  }
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Imagen (nueva)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Imagen (nueva)
+                </label>
                 <input
                   type="file"
                   accept="image/*"
