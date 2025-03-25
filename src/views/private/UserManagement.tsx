@@ -43,10 +43,10 @@ const UserManagement: React.FC = () => {
   const updateRole = async (id: string, currentRole: 'admin' | 'usuario') => {
     const newRole = currentRole === 'admin' ? 'usuario' : 'admin';
     try {
-      await api.patch(`/users/${id}`, { role: newRole });
+      await api.patch(`/users/${id}`, { rol: newRole }); // Cambiado a "rol"
       setUsers(prevUsers =>
         prevUsers.map(user =>
-          user._id === id ? { ...user, role: newRole } : user
+          user._id === id ? { ...user, rol: newRole } : user
         )
       );
       toast.success(`Rol actualizado a ${newRole}`);
@@ -55,6 +55,7 @@ const UserManagement: React.FC = () => {
       toast.error('Error al actualizar rol');
     }
   };
+  
 
   const filteredUsers = users.filter(user =>
     user.username.toLowerCase().includes(search.toLowerCase())
