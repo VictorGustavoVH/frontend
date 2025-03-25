@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import api from '../../config/axios';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
@@ -8,7 +8,7 @@ interface User {
   _id: string;
   username: string;
   email: string;
-  role: 'admin' | 'usuario';
+  rol: 'admin' | 'usuario'; // Cambiado a "rol"
 }
 
 const UserManagement: React.FC = () => {
@@ -21,6 +21,7 @@ const UserManagement: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
+      // Asegúrate de que el backend retorne el campo "rol"
       const response = await api.get('/users');
       setUsers(response.data);
     } catch (error) {
@@ -38,16 +39,17 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const updateRole = async (id: string, currentRole: 'admin' | 'usuario') => {
-    const newRole = currentRole === 'admin' ? 'usuario' : 'admin';
+  const updateRole = async (id: string, currentRol: 'admin' | 'usuario') => {
+    const newRol = currentRol === 'admin' ? 'usuario' : 'admin';
     try {
-      await api.patch(`/users/${id}`, { role: newRole });
+      // Envía "rol" en lugar de "role"
+      await api.patch(`/users/${id}`, { rol: newRol });
       setUsers(prevUsers =>
         prevUsers.map(user =>
-          user._id === id ? { ...user, role: newRole } : user
+          user._id === id ? { ...user, rol: newRol } : user
         )
       );
-      toast.success(`Rol actualizado a ${newRole}`);
+      toast.success(`Rol actualizado a ${newRol}`);
     } catch (error) {
       toast.error('Error al actualizar rol');
     }
@@ -77,7 +79,6 @@ const UserManagement: React.FC = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          {/* Aquí podrías agregar un botón para "Agregar Usuario" si lo requieres */}
         </div>
 
         {/* Tabla de usuarios */}
@@ -96,10 +97,10 @@ const UserManagement: React.FC = () => {
                 <tr key={user._id} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   <td className="px-4 py-3">{user.username}</td>
                   <td className="px-4 py-3">{user.email}</td>
-                  <td className="px-4 py-3">{user.role}</td>
+                  <td className="px-4 py-3">{user.rol}</td>
                   <td className="px-4 py-3 space-x-2">
                     <button
-                      onClick={() => updateRole(user._id, user.role)}
+                      onClick={() => updateRole(user._id, user.rol)}
                       className="px-3 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
                     >
                       Cambiar Rol
