@@ -1,21 +1,20 @@
 import React from "react";
 import { motion } from "framer-motion"; // Importamos motion
 import { FaLightbulb, FaCheckCircle, FaLeaf, FaUsers, FaBalanceScale } from "react-icons/fa";
-import "./App.css";
 
 const BodyContent: React.FC = () => {
   return (
     <motion.div
       className="container"
-      initial={{ opacity: 0 }}         // Inicia transparente
-      animate={{ opacity: 1 }}         // Se desvanece hacia visible
-      transition={{ duration: 1.5 }}   // Duración de la animación
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5 }}
     >
       {/* Sección "Quiénes Somos" */}
       <motion.section
         className="section"
-        initial={{ x: -100 }}          // Empieza desde la izquierda
-        animate={{ x: 0 }}             // Llega a su posición original
+        initial={{ x: -100 }}
+        animate={{ x: 0 }}
         transition={{ duration: 1 }}
       >
         <h2 className="title">¿Quiénes Somos?</h2>
@@ -65,37 +64,27 @@ const BodyContent: React.FC = () => {
             opacity: 1,
             transition: {
               delayChildren: 0.8,
-              staggerChildren: 0.2, // Los ítems aparecerán de a poco
+              staggerChildren: 0.2,
             },
           },
         }}
       >
         <h2 className="title">Nuestros Valores</h2>
         <motion.ul className="text">
-          <motion.li
-            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-          >
-            <FaLightbulb style={{ color: "#1572a1", marginRight: "10px" }} /> Innovación
+          <motion.li variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <FaLightbulb style={{ marginRight: "10px" }} /> Innovación
           </motion.li>
-          <motion.li
-            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-          >
-            <FaCheckCircle style={{ color: "#0f5a8b", marginRight: "10px" }} /> Compromiso con la calidad
+          <motion.li variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <FaCheckCircle style={{ marginRight: "10px" }} /> Compromiso con la calidad
           </motion.li>
-          <motion.li
-            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-          >
-            <FaLeaf style={{ color: "#28a745", marginRight: "10px" }} /> Sostenibilidad
+          <motion.li variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <FaLeaf style={{ marginRight: "10px" }} /> Sostenibilidad
           </motion.li>
-          <motion.li
-            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-          >
-            <FaUsers style={{ color: "#6f42c1", marginRight: "10px" }} /> Responsabilidad social
+          <motion.li variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <FaUsers style={{ marginRight: "10px" }} /> Responsabilidad social
           </motion.li>
-          <motion.li
-            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-          >
-            <FaBalanceScale style={{ color: "#fd7e14", marginRight: "10px" }} /> Ética profesional
+          <motion.li variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <FaBalanceScale style={{ marginRight: "10px" }} /> Ética profesional
           </motion.li>
         </motion.ul>
       </motion.section>
@@ -105,14 +94,13 @@ const BodyContent: React.FC = () => {
 
 export default BodyContent;
 
-// CSS dentro del mismo archivo
-
+// CSS inyectado directamente en el archivo
 
 const styles = `
 body {
   margin: 0;
   font-family: "Arial", sans-serif;
-  background-color: #f0f8ff; /* Azul claro */
+  background-color: #f0f8ff;
 }
 
 .container {
@@ -122,39 +110,33 @@ body {
 }
 
 .section {
-  background-color: #ffffff; /* Blanco */
+  background-color: #ffffff;
   margin-bottom: 30px;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .title {
   font-size: 24px;
   font-weight: bold;
-  color: #0057b8; /* Azul oscuro */
+  color: #0057b8;
   margin-bottom: 12px;
 }
 
 .text {
   font-size: 17px;
-  color: #222; /* Mejor contraste */
+  color: #222;
   text-align: justify;
-  line-height: 1.5; /* Mejor espaciado */
-}
-
-.listItem {
-  font-size: 17px;
-  color: #0057b8;
-  margin-top: 8px; /* Espaciado entre ítems */
+  line-height: 1.5;
 }
 
 ul {
-  padding-left: 20px; /* Espaciado para la lista */
+  padding-left: 20px;
 }
 
 li {
-  list-style: none; /* Elimina los bullets predeterminados */
+  list-style: none;
 }
 
 @media (min-width: 768px) {
