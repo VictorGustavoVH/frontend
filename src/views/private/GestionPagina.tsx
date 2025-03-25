@@ -1,156 +1,198 @@
+// Pagina.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-interface PaginaData {
+interface PageData {
   quienesSomos: string;
   mision: string;
   vision: string;
   valores: string;
-  contacto: string;
-  terminos: string;
+  preguntasFrecuentes: string;
+  contacto?: string;
+  terminos?: string;
 }
 
 const GestionPagina: React.FC = () => {
-  const [pagina, setPagina] = useState<PaginaData>({
+  const [data, setData] = useState<PageData>({
     quienesSomos: '',
     mision: '',
     vision: '',
     valores: '',
+    preguntasFrecuentes: '',
     contacto: '',
-    terminos: ''
+    terminos: '',
   });
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
 
-  // Obtener datos actuales al cargar el componente
-  useEffect(() => {
-    axios.get<PaginaData>('/api/pagina/gestion') // Asegúrate de tener este endpoint
-      .then(response => {
-        setPagina(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error al cargar los datos:', error);
-        setLoading(false);
-      });
-  }, []);
+  // Define el identificador de la página a gestionar.
+  // Aquí usamos "contenido", pero puedes cambiarlo según convenga.
+  const paginaName = "contenido";
 
-  // Actualiza el estado en cada cambio de input
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setPagina({ ...pagina, [e.target.name]: e.target.value });
+  // Obtener los datos actuales de la página al cargar el componente
+  useEffect(() => {
+    axios.get(`/admin/pagina/${paginaName}`)
+      .then((res) => {
+        setData(prev => ({ ...prev, ...res.data }));
+      })
+      .catch((err) => {
+        console.error("Error al obtener la información de la página:", err);
+      });
+  }, [paginaName]);
+
+  // Manejar cambios en los campos del formulario
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setData({
+      ...data,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  // Envía el formulario para actualizar los datos
+  // Enviar el formulario para actualizar la información
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    axios.patch('/api/pagina/gestion', pagina) // Asegúrate de tener implementado este endpoint
+    setLoading(true);
+    axios.patch(`/admin/pagina/${paginaName}`, data)
       .then(() => {
-        setMessage('Datos actualizados correctamente');
+        setMessage("Contenido actualizado correctamente.");
       })
-      .catch(error => {
-        console.error('Error al actualizar:', error);
-        setMessage('Error al actualizar los datos');
-      });
+      .catch((err) => {
+        console.error("Error al actualizar el contenido:", err);
+        setMessage("Error al actualizar el contenido.");
+      })
+      .finally(() => setLoading(false));
   };
 
-  if (loading) {
-    return <p>Cargando...</p>;
-  }
-
   return (
-    <div className="gestion-pagina">
-      <h1>Gestión de Página</h1>
-      {message && <p>{message}</p>}
+    <div className="pagina-container">
+      <h2>Editor de Contenido de la Página</h2>
+      {message && <p className="message">{message}</p>}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Quiénes Somos:</label>
+          <label htmlFor="quienesSomos">¿Quiénes Somos?</label>
           <textarea
+            id="quienesSomos"
             name="quienesSomos"
-            value={pagina.quienesSomos}
+            value={data.quienesSomos}
             onChange={handleChange}
             rows={4}
           />
         </div>
         <div className="form-group">
-          <label>Misión:</label>
+          <label htmlFor="mision">Misión</label>
           <textarea
+            id="mision"
             name="mision"
-            value={pagina.mision}
+            value={data.mision}
             onChange={handleChange}
             rows={4}
           />
         </div>
         <div className="form-group">
-          <label>Visión:</label>
+          <label htmlFor="vision">Visión</label>
           <textarea
+            id="vision"
             name="vision"
-            value={pagina.vision}
+            value={data.vision}
             onChange={handleChange}
             rows={4}
           />
         </div>
         <div className="form-group">
-          <label>Valores:</label>
+          <label htmlFor="valores">Valores</label>
           <textarea
+            id="valores"
             name="valores"
-            value={pagina.valores}
+            value={data.valores}
             onChange={handleChange}
             rows={4}
           />
         </div>
         <div className="form-group">
-          <label>Contacto:</label>
+          <label htmlFor="preguntasFrecuentes">Preguntas Frecuentes</label>
           <textarea
+            id="preguntasFrecuentes"
+            name="preguntasFrecuentes"
+            value={data.preguntasFrecuentes}
+            onChange={handleChange}
+            rows={6}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="contacto">Contacto</label>
+          <textarea
+            id="contacto"
             name="contacto"
-            value={pagina.contacto}
+            value={data.contacto || ''}
             onChange={handleChange}
-            rows={4}
+            rows={3}
           />
         </div>
         <div className="form-group">
-          <label>Términos y Condiciones:</label>
+          <label htmlFor="terminos">Términos y Condiciones</label>
           <textarea
+            id="terminos"
             name="terminos"
-            value={pagina.terminos}
+            value={data.terminos || ''}
             onChange={handleChange}
-            rows={4}
+            rows={6}
           />
         </div>
-        <button type="submit">Guardar cambios</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Guardando..." : "Guardar Cambios"}
+        </button>
       </form>
-      {/* Puedes agregar estilos o importar un archivo CSS */}
       <style>{`
-        .gestion-pagina {
+        .pagina-container {
           max-width: 800px;
           margin: 20px auto;
           padding: 20px;
+          background: #f8f8f8;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           font-family: Arial, sans-serif;
         }
-        .form-group {
+        .pagina-container h2 {
+          text-align: center;
           margin-bottom: 20px;
+          color: #333;
         }
-        label {
-          display: block;
+        .form-group {
+          margin-bottom: 15px;
+          display: flex;
+          flex-direction: column;
+        }
+        .form-group label {
           font-weight: bold;
           margin-bottom: 5px;
+          color: #555;
         }
-        textarea {
-          width: 100%;
-          padding: 10px;
+        .form-group textarea {
+          padding: 8px;
+          font-size: 16px;
           border: 1px solid #ccc;
           border-radius: 4px;
           resize: vertical;
+          font-family: Arial, sans-serif;
+        }
+        .message {
+          text-align: center;
+          margin-bottom: 15px;
+          color: green;
         }
         button {
-          padding: 10px 20px;
-          background-color: #0057b8;
+          width: 100%;
+          padding: 10px;
+          font-size: 18px;
+          background: #0057b8;
           color: #fff;
           border: none;
           border-radius: 4px;
           cursor: pointer;
         }
-        button:hover {
-          background-color: #004399;
+        button:disabled {
+          background: #aaa;
+          cursor: not-allowed;
         }
       `}</style>
     </div>
