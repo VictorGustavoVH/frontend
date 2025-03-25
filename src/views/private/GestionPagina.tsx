@@ -1,3 +1,4 @@
+// views/private/GestionPagina.tsx
 import React, { useState, useEffect } from 'react';
 import api from '../../config/axios';
 
@@ -24,19 +25,16 @@ const GestionPagina: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
 
-  // Identificador de la página a gestionar (ajusta según convenga)
-  const paginaName = "contenido";
-
-  // Obtener los datos actuales de la página al cargar el componente
+  // Obtener los datos actuales de la página
   useEffect(() => {
-    api.get(`/admin/pagina/${paginaName}`)
+    api.get('/admin/pagina')
       .then((res) => {
         setData(prev => ({ ...prev, ...res.data }));
       })
       .catch((err) => {
         console.error("Error al obtener la información de la página:", err);
       });
-  }, [paginaName]);
+  }, []);
 
   // Manejar cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -50,7 +48,7 @@ const GestionPagina: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    api.patch(`/admin/pagina/${paginaName}`, data)
+    api.patch('/admin/pagina', data)
       .then(() => {
         setMessage("Contenido actualizado correctamente.");
       })
