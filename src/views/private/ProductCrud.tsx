@@ -1,9 +1,7 @@
-// ProductCrud.tsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   getProducts,
- 
   uploadProductImage,
   updateProduct as apiUpdateProduct,
   deleteProduct as apiDeleteProduct
@@ -12,17 +10,32 @@ import { Product } from '../../types/product';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { FaSearch, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
+import {
+  FaSearch,
+  FaEdit,
+  FaTrash,
+  FaEllipsisV,
+  FaImage,
+  FaBoxOpen,
+  FaList,
+  FaTrademark,
+  FaDollarSign,
+  FaCogs,
+  FaArrowLeft,
+  FaArrowRight
+} from 'react-icons/fa';
 
 const ProductCrud: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Partial<Product>>({});
-  // Estado para almacenar el nuevo archivo de imagen en la edición
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
-  // Estado para controlar cuál dropdown está abierto en la tabla
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+
+  // Estado de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 20;
 
   useEffect(() => {
     fetchAllProducts();
@@ -37,7 +50,7 @@ const ProductCrud: React.FC = () => {
     }
   };
 
-  // UPDATE product
+  // Actualizar producto
   const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -45,10 +58,8 @@ const ProductCrud: React.FC = () => {
         toast.error('No hay producto seleccionado');
         return;
       }
-      // Actualizar campos (sin la imagen, que se gestiona aparte)
       const { image, ...fields } = editProduct;
       await apiUpdateProduct(editProduct._id, fields);
-      // Si se seleccionó un nuevo archivo, subirlo
       if (editImageFile) {
         await uploadProductImage(editImageFile, editProduct.name!);
       }
@@ -62,7 +73,7 @@ const ProductCrud: React.FC = () => {
     }
   };
 
-  // DELETE product
+  // Eliminar producto
   const handleDeleteProduct = async (productId: string) => {
     try {
       await apiDeleteProduct(productId);
@@ -73,7 +84,7 @@ const ProductCrud: React.FC = () => {
     }
   };
 
-  // Apertura del modal de edición
+  // Abrir modal de edición
   const openEditModal = (p: Product) => {
     setEditProduct(p);
     setShowUpdateModal(true);
@@ -85,6 +96,14 @@ const ProductCrud: React.FC = () => {
   const filteredProducts = products.filter((prod) =>
     prod.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Cálculo de paginación
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <div>
@@ -98,16 +117,20 @@ const ProductCrud: React.FC = () => {
               type="text"
               placeholder="Buscar productos..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
           </div>
           <div className="flex justify-end">
             <Link
               to="/admin/product/GestionProductos/Register"
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center space-x-2"
             >
-              Agregar Producto
+              <FaEdit />
+              <span>Agregar Producto</span>
             </Link>
           </div>
         </div>
@@ -117,23 +140,39 @@ const ProductCrud: React.FC = () => {
           <table className="min-w-full bg-white dark:bg-gray-800">
             <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-200">
               <tr>
-                <th className="px-4 py-3 text-left">Imagen</th>
-                <th className="px-4 py-3 text-left">Nombre</th>
-                <th className="px-4 py-3 text-left">Categoría</th>
-                <th className="px-4 py-3 text-left">Marca</th>
-                <th className="px-4 py-3 text-left">Precio</th>
-                <th className="px-4 py-3 text-left">Acciones</th>
+                <th className="px-4 py-3 text-left">
+                  <FaImage className="inline-block mr-1" /> Imagen
+                </th>
+                <th className="px-4 py-3 text-left">
+                  <FaBoxOpen className="inline-block mr-1" /> Nombre
+                </th>
+                <th className="px-4 py-3 text-left">
+                  <FaList className="inline-block mr-1" /> Categoría
+                </th>
+                <th className="px-4 py-3 text-left">
+                  <FaTrademark className="inline-block mr-1" /> Marca
+                </th>
+                <th className="px-4 py-3 text-left">
+                  <FaDollarSign className="inline-block mr-1" /> Precio
+                </th>
+                <th className="px-4 py-3 text-left">
+                  <FaCogs className="inline-block mr-1" /> Acciones
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredProducts.map((prod) => (
+              {currentProducts.map((prod) => (
                 <tr
                   key={prod._id || prod.name}
                   className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   <td className="px-4 py-3">
                     {prod.image ? (
-                      <img src={prod.image} alt={prod.name} className="w-16 h-16 object-cover rounded" />
+                      <img
+                        src={prod.image}
+                        alt={prod.name}
+                        className="w-16 h-16 object-cover rounded transition-transform duration-300 hover:scale-105"
+                      />
                     ) : (
                       <span className="text-gray-400">Sin imagen</span>
                     )}
@@ -181,12 +220,43 @@ const ProductCrud: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-4">
+          <nav className="flex items-center space-x-2">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex items-center px-3 py-1 border rounded-md hover:bg-blue-100 transition-all duration-300 disabled:opacity-50"
+            >
+              <FaArrowLeft className="mr-1" /> Anterior
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => (
+              <button
+                key={number}
+                onClick={() => paginate(number)}
+                className={`px-3 py-1 border rounded-md transition-all duration-300 ${
+                  currentPage === number ? 'bg-blue-500 text-white' : 'hover:bg-blue-100'
+                }`}
+              >
+                {number}
+              </button>
+            ))}
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="flex items-center px-3 py-1 border rounded-md hover:bg-blue-100 transition-all duration-300 disabled:opacity-50"
+            >
+              Siguiente <FaArrowRight className="ml-1" />
+            </button>
+          </nav>
+        </div>
       </div>
 
       {/* Modal de actualización */}
       {showUpdateModal && editProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 w-full max-w-md rounded-md shadow-lg">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition-opacity duration-300">
+          <div className="bg-white dark:bg-gray-800 p-6 w-full max-w-md rounded-md shadow-lg transform transition-transform duration-300">
             <h2 className="text-xl mb-4 font-bold">Editar Producto</h2>
             <form onSubmit={handleUpdateProduct} className="space-y-3">
               <div>
@@ -254,14 +324,14 @@ const ProductCrud: React.FC = () => {
                     <img
                       src={URL.createObjectURL(editImageFile)}
                       alt="Nueva"
-                      className="w-16 h-16 object-cover rounded"
+                      className="w-16 h-16 object-cover rounded transition-transform duration-300 hover:scale-105"
                     />
                   ) : (
                     editProduct.image && (
                       <img
                         src={editProduct.image}
                         alt="Actual"
-                        className="w-16 h-16 object-cover rounded"
+                        className="w-16 h-16 object-cover rounded transition-transform duration-300 hover:scale-105"
                       />
                     )
                   )}
@@ -276,8 +346,8 @@ const ProductCrud: React.FC = () => {
                   Cancelar
                 </button>
                 <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
                   type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
                 >
                   Actualizar
                 </button>
