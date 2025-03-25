@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import api from '../../config/axios';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
@@ -19,28 +19,29 @@ interface RoleToggleProps {
 
 const RoleToggle: React.FC<RoleToggleProps> = ({ role, onChange }) => {
   return (
-    <div className="flex items-center border rounded-md overflow-hidden">
+    // Contenedor con un único borde, botones sin borde individual
+    <div className="inline-flex rounded-md border overflow-hidden">
       <button
         onClick={() => role !== 'usuario' && onChange('usuario')}
-        className={`flex items-center px-3 py-1 transition-all duration-300 ${
+        className={`px-3 py-2 flex items-center justify-center text-sm font-medium transition-colors duration-300 ${
           role === 'usuario'
             ? 'bg-blue-500 text-white'
-            : 'bg-gray-100 text-gray-800 hover:bg-blue-100'
+            : 'bg-white text-gray-700 hover:bg-gray-100'
         }`}
       >
         <FaUser className="mr-1" />
-        <span className="text-sm">Usuario</span>
+        Usuario
       </button>
       <button
         onClick={() => role !== 'admin' && onChange('admin')}
-        className={`flex items-center px-3 py-1 transition-all duration-300 ${
+        className={`px-3 py-2 flex items-center justify-center text-sm font-medium transition-colors duration-300 ${
           role === 'admin'
             ? 'bg-blue-500 text-white'
-            : 'bg-gray-100 text-gray-800 hover:bg-blue-100'
+            : 'bg-white text-gray-700 hover:bg-gray-100'
         }`}
       >
         <FaUserShield className="mr-1" />
-        <span className="text-sm">Admin</span>
+        Admin
       </button>
     </div>
   );
@@ -152,7 +153,8 @@ const UserManagement: React.FC = () => {
                       onClick={() => deleteUser(user._id)}
                       className="flex items-center px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 transition-all duration-300"
                     >
-                      <FaTrash className="mr-2" /> Eliminar
+                      <FaTrash className="mr-2" />
+                      Eliminar
                     </button>
                   </td>
                 </tr>
