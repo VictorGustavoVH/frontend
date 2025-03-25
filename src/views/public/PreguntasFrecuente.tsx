@@ -9,7 +9,7 @@ interface FAQSection {
   title: string;
   description: string;
   icon: string;
-  content: string; // Se espera contenido HTML o texto
+  content: string; // Puede contener HTML o texto
 }
 
 const PreguntasFrecuentes: React.FC = () => {
@@ -17,11 +17,10 @@ const PreguntasFrecuentes: React.FC = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   useEffect(() => {
-    // Se asume que existe un endpoint público que retorna el documento de la página
-    // En este ejemplo, se hace un GET a "/pagina/contenido"
+    // Se hace una petición GET al endpoint que devuelve el documento con el contenido
     axios.get('/pagina/contenido')
       .then(res => {
-        // El campo "preguntasFrecuentes" se espera sea un JSON-string
+        // Se espera que el campo "preguntasFrecuentes" sea un string JSON
         const faqString = res.data.preguntasFrecuentes;
         try {
           const parsedFaq: FAQSection[] = JSON.parse(faqString);
@@ -70,7 +69,7 @@ const PreguntasFrecuentes: React.FC = () => {
               </span>
               {expandedSection === section.id && (
                 <div className="sectionContentExpand">
-                  {/* Si el contenido es HTML, se puede renderizar con dangerouslySetInnerHTML */}
+                  {/* Si el contenido es HTML, se renderiza con dangerouslySetInnerHTML */}
                   <div dangerouslySetInnerHTML={{ __html: section.content }} />
                 </div>
               )}

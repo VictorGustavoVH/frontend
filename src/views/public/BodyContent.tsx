@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FaLightbulb, FaCheckCircle, FaLeaf, FaUsers, FaBalanceScale } from "react-icons/fa";
+import { FaLightbulb, FaCheckCircle, FaLeaf, FaUsers, FaBalanceScale } from 'react-icons/fa';
 
 const BodyContent: React.FC = () => {
   const [content, setContent] = useState({
@@ -13,7 +13,7 @@ const BodyContent: React.FC = () => {
   });
 
   useEffect(() => {
-    // Se asume que el endpoint público es "/pagina/contenido"
+    // Se hace la petición al endpoint público que retorna el documento de contenido
     axios.get('/pagina/contenido')
       .then(res => {
         setContent({
@@ -105,10 +105,6 @@ const BodyContent: React.FC = () => {
       </motion.section>
 
       <style>{`
-        body {
-          margin: 0;
-          font-family: "Arial", sans-serif;
-        }
         .container {
           max-width: 900px;
           margin: 0 auto;
