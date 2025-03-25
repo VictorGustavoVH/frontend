@@ -1,8 +1,13 @@
 // GestionPagina.tsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { isAxiosError } from 'axios';
+import api from '../../config/axios';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
-interface PageData {
+export type PageContent = {
   quienesSomos: string;
   mision: string;
   vision: string;
@@ -10,186 +15,137 @@ interface PageData {
   preguntasFrecuentes: string;
   contacto?: string;
   terminos?: string;
-}
+};
 
 const GestionPagina: React.FC = () => {
-  const [data, setData] = useState<PageData>({
-    quienesSomos: '',
-    mision: '',
-    vision: '',
-    valores: '',
-    preguntasFrecuentes: '',
-    contacto: '',
-    terminos: '',
-  });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<PageContent>();
 
-  // Definir el identificador de la página (por ejemplo "contenido")
+  // Define el identificador de la página a gestionar (por ejemplo "contenido")
   const paginaName = "contenido";
 
-  // Cargar datos actuales al montar el componente
+  // Cargar el contenido actual cuando se monta el componente
   useEffect(() => {
-    axios.get(`/admin/pagina/${paginaName}`)
-      .then(res => {
-        setData(prev => ({ ...prev, ...res.data }));
+    api.get(`/admin/pagina/${paginaName}`)
+      .then((res) => {
+        reset({
+          quienesSomos: res.data.quienesSomos,
+          mision: res.data.mision,
+          vision: res.data.vision,
+          valores: res.data.valores,
+          preguntasFrecuentes: res.data.preguntasFrecuentes,
+          contacto: res.data.contacto,
+          terminos: res.data.terminos,
+        });
       })
-      .catch(err => {
-        console.error("Error al obtener la información de la página:", err);
+      .catch((err) => {
+        toast.error("Error al cargar el contenido");
+        console.error(err);
       });
-  }, [paginaName]);
+  }, [paginaName, reset]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    axios.patch(`/admin/pagina/${paginaName}`, data)
-      .then(() => {
-        setMessage("Contenido actualizado correctamente.");
-      })
-      .catch(err => {
-        console.error("Error al actualizar el contenido:", err);
-        setMessage("Error al actualizar el contenido.");
-      })
-      .finally(() => setLoading(false));
+  const onSubmit = async (data: PageContent) => {
+    try {
+      await api.patch(`/admin/pagina/${paginaName}`, data);
+      toast.success("Contenido actualizado correctamente");
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        toast.error(String(error.response.data.error));
+      } else {
+        toast.error("Error al actualizar el contenido");
+      }
+      console.error(error);
+    }
   };
 
   return (
-    <div className="pagina-container">
-      <h2>Editor de Contenido de la Página</h2>
-      {message && <p className="message">{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="quienesSomos">¿Quiénes Somos?</label>
-          <textarea
-            id="quienesSomos"
-            name="quienesSomos"
-            value={data.quienesSomos}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="mision">Misión</label>
-          <textarea
-            id="mision"
-            name="mision"
-            value={data.mision}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="vision">Visión</label>
-          <textarea
-            id="vision"
-            name="vision"
-            value={data.vision}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="valores">Valores</label>
-          <textarea
-            id="valores"
-            name="valores"
-            value={data.valores}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="preguntasFrecuentes">Preguntas Frecuentes (JSON)</label>
-          <textarea
-            id="preguntasFrecuentes"
-            name="preguntasFrecuentes"
-            value={data.preguntasFrecuentes}
-            onChange={handleChange}
-            rows={6}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="contacto">Contacto</label>
-          <textarea
-            id="contacto"
-            name="contacto"
-            value={data.contacto || ''}
-            onChange={handleChange}
-            rows={3}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="terminos">Términos y Condiciones</label>
-          <textarea
-            id="terminos"
-            name="terminos"
-            value={data.terminos || ''}
-            onChange={handleChange}
-            rows={6}
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Guardando..." : "Guardar Cambios"}
-        </button>
-      </form>
+    <div>
+      <Header />
+      <div className="container mx-auto p-4">
+        <h2 className="text-3xl font-bold text-center mb-6">Gestión de Contenido de la Página</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* ¿Quiénes Somos? */}
+          <div>
+            <label className="block text-lg font-medium text-blue-700">¿Quiénes Somos?</label>
+            <textarea 
+              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
+              {...register('quienesSomos', { required: 'Este campo es obligatorio' })}
+            />
+            {errors.quienesSomos && <p className="text-red-500 text-sm">{errors.quienesSomos.message}</p>}
+          </div>
+
+          {/* Misión */}
+          <div>
+            <label className="block text-lg font-medium text-blue-700">Misión</label>
+            <textarea 
+              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
+              {...register('mision', { required: 'Este campo es obligatorio' })}
+            />
+            {errors.mision && <p className="text-red-500 text-sm">{errors.mision.message}</p>}
+          </div>
+
+          {/* Visión */}
+          <div>
+            <label className="block text-lg font-medium text-blue-700">Visión</label>
+            <textarea 
+              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
+              {...register('vision', { required: 'Este campo es obligatorio' })}
+            />
+            {errors.vision && <p className="text-red-500 text-sm">{errors.vision.message}</p>}
+          </div>
+
+          {/* Valores */}
+          <div>
+            <label className="block text-lg font-medium text-blue-700">Valores</label>
+            <textarea 
+              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
+              {...register('valores', { required: 'Este campo es obligatorio' })}
+            />
+            {errors.valores && <p className="text-red-500 text-sm">{errors.valores.message}</p>}
+          </div>
+
+          {/* Preguntas Frecuentes (Formato JSON) */}
+          <div>
+            <label className="block text-lg font-medium text-blue-700">
+              Preguntas Frecuentes (Formato JSON)
+            </label>
+            <textarea 
+              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
+              {...register('preguntasFrecuentes', { required: 'Este campo es obligatorio' })}
+              placeholder={`[ { "id": "faq1", "title": "Pregunta 1", "description": "Descripción", "icon": "❓", "content": "<p>Respuesta</p>" } ]`}
+            />
+            {errors.preguntasFrecuentes && <p className="text-red-500 text-sm">{errors.preguntasFrecuentes.message}</p>}
+          </div>
+
+          {/* Contacto */}
+          <div>
+            <label className="block text-lg font-medium text-blue-700">Contacto</label>
+            <textarea 
+              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
+              {...register('contacto')}
+            />
+          </div>
+
+          {/* Términos y Condiciones */}
+          <div>
+            <label className="block text-lg font-medium text-blue-700">Términos y Condiciones</label>
+            <textarea 
+              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
+              {...register('terminos')}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-lg transition duration-300"
+          >
+            Actualizar Contenido
+          </button>
+        </form>
+      </div>
+      <Footer />
       <style>{`
-        .pagina-container {
+        .container {
           max-width: 800px;
-          margin: 20px auto;
-          padding: 20px;
-          background: #f8f8f8;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          font-family: Arial, sans-serif;
-        }
-        .pagina-container h2 {
-          text-align: center;
-          margin-bottom: 20px;
-          color: #333;
-        }
-        .form-group {
-          margin-bottom: 15px;
-          display: flex;
-          flex-direction: column;
-        }
-        .form-group label {
-          font-weight: bold;
-          margin-bottom: 5px;
-          color: #555;
-        }
-        .form-group textarea {
-          padding: 8px;
-          font-size: 16px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          resize: vertical;
-          font-family: Arial, sans-serif;
-        }
-        .message {
-          text-align: center;
-          margin-bottom: 15px;
-          color: green;
-        }
-        button {
-          width: 100%;
-          padding: 10px;
-          font-size: 18px;
-          background: #0057b8;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-        button:disabled {
-          background: #aaa;
-          cursor: not-allowed;
         }
       `}</style>
     </div>
