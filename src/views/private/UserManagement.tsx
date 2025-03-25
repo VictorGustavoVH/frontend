@@ -21,8 +21,9 @@ const UserManagement: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      // Asegúrate que el backend retorne el campo "rol"
+      // Asegúrate de que el backend retorne el campo "rol"
       const response = await api.get('/users');
+      console.log('Usuarios obtenidos:', response.data); // Para depurar
       setUsers(response.data);
     } catch (error) {
       toast.error('Error al obtener usuarios');
@@ -42,7 +43,7 @@ const UserManagement: React.FC = () => {
   const updateRole = async (id: string, currentRol: 'usuario' | 'admin') => {
     const newRol = currentRol === 'admin' ? 'usuario' : 'admin';
     try {
-      // Enviar "rol" en lugar de "role"
+      // Se envía "rol" en el payload para actualizar
       await api.patch(`/users/${id}`, { rol: newRol });
       setUsers(prevUsers =>
         prevUsers.map(user =>
@@ -97,7 +98,7 @@ const UserManagement: React.FC = () => {
                 <tr key={user._id} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   <td className="px-4 py-3">{user.username}</td>
                   <td className="px-4 py-3">{user.email}</td>
-                  <td className="px-4 py-3">{user.rol}</td>
+                  <td className="px-4 py-3">{user.rol || 'No asignado'}</td>
                   <td className="px-4 py-3 space-x-2">
                     <button
                       onClick={() => updateRole(user._id, user.rol)}
