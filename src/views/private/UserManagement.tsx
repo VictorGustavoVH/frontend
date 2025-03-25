@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import api from '../../config/axios';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { FaSearch, FaTrash } from 'react-icons/fa';
+import { FaSearch, FaTrash, FaUser, FaUserShield } from 'react-icons/fa';
 
 interface User {
   _id: string;
@@ -12,11 +12,45 @@ interface User {
   rol: 'admin' | 'usuario';
 }
 
+interface RoleToggleProps {
+  role: 'admin' | 'usuario';
+  onChange: (newRole: 'admin' | 'usuario') => void;
+}
+
+const RoleToggle: React.FC<RoleToggleProps> = ({ role, onChange }) => {
+  return (
+    <div className="flex items-center border rounded-md overflow-hidden">
+      <button
+        onClick={() => role !== 'usuario' && onChange('usuario')}
+        className={`flex items-center px-3 py-1 transition-all duration-300 ${
+          role === 'usuario'
+            ? 'bg-blue-500 text-white'
+            : 'bg-gray-100 text-gray-800 hover:bg-blue-100'
+        }`}
+      >
+        <FaUser className="mr-1" />
+        <span className="text-sm">Usuario</span>
+      </button>
+      <button
+        onClick={() => role !== 'admin' && onChange('admin')}
+        className={`flex items-center px-3 py-1 transition-all duration-300 ${
+          role === 'admin'
+            ? 'bg-blue-500 text-white'
+            : 'bg-gray-100 text-gray-800 hover:bg-blue-100'
+        }`}
+      >
+        <FaUserShield className="mr-1" />
+        <span className="text-sm">Admin</span>
+      </button>
+    </div>
+  );
+};
+
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 5;
+  const usersPerPage = 20;
 
   useEffect(() => {
     fetchUsers();
@@ -107,18 +141,13 @@ const UserManagement: React.FC = () => {
                 >
                   <td className="px-4 py-3">{user.username}</td>
                   <td className="px-4 py-3">{user.email}</td>
-                  <td className="px-4 py-3">{user.rol}</td>
-                  <td className="px-4 py-3 flex items-center space-x-4">
-                    <select
-                      defaultValue={user.rol}
-                      onChange={(e) =>
-                        updateRole(user._id, e.target.value as 'admin' | 'usuario')
-                      }
-                      className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-                    >
-                      <option value="usuario">Usuario</option>
-                      <option value="admin">Admin</option>
-                    </select>
+                  <td className="px-4 py-3">
+                    <RoleToggle
+                      role={user.rol}
+                      onChange={(newRole) => updateRole(user._id, newRole)}
+                    />
+                  </td>
+                  <td className="px-4 py-3">
                     <button
                       onClick={() => deleteUser(user._id)}
                       className="flex items-center px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 transition-all duration-300"
