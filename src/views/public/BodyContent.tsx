@@ -96,7 +96,7 @@ const BodyContent: React.FC = () => {
         body {
           margin: 0;
           font-family: "Arial", sans-serif;
-          background-color: #f0f8ff;
+        
         }
         
         .container {
