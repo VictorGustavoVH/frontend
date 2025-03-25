@@ -32,7 +32,7 @@ const Catalogo: React.FC = () => {
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // o el número que prefieras
+  const itemsPerPage = 12; // o el número que prefieras
 
   useEffect(() => {
     async function fetchProducts() {
