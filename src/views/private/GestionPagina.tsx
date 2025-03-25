@@ -1,6 +1,6 @@
-// views/private/GestionPagina.tsx
+// GestionPagina.tsx
 import React, { useState, useEffect } from 'react';
-import api from '../../config/axios';
+import axios from 'axios';
 
 interface PageData {
   quienesSomos: string;
@@ -25,18 +25,20 @@ const GestionPagina: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
 
-  // Obtener los datos actuales de la página
+  // Definir el identificador de la página (por ejemplo "contenido")
+  const paginaName = "contenido";
+
+  // Cargar datos actuales al montar el componente
   useEffect(() => {
-    api.get('/admin/pagina')
-      .then((res) => {
+    axios.get(`/admin/pagina/${paginaName}`)
+      .then(res => {
         setData(prev => ({ ...prev, ...res.data }));
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Error al obtener la información de la página:", err);
       });
-  }, []);
+  }, [paginaName]);
 
-  // Manejar cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setData({
       ...data,
@@ -44,15 +46,14 @@ const GestionPagina: React.FC = () => {
     });
   };
 
-  // Enviar el formulario para actualizar la información
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    api.patch('/admin/pagina', data)
+    axios.patch(`/admin/pagina/${paginaName}`, data)
       .then(() => {
         setMessage("Contenido actualizado correctamente.");
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Error al actualizar el contenido:", err);
         setMessage("Error al actualizar el contenido.");
       })
@@ -105,7 +106,7 @@ const GestionPagina: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="preguntasFrecuentes">Preguntas Frecuentes</label>
+          <label htmlFor="preguntasFrecuentes">Preguntas Frecuentes (JSON)</label>
           <textarea
             id="preguntasFrecuentes"
             name="preguntasFrecuentes"
@@ -145,7 +146,7 @@ const GestionPagina: React.FC = () => {
           padding: 20px;
           background: #f8f8f8;
           border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
           font-family: Arial, sans-serif;
         }
         .pagina-container h2 {
