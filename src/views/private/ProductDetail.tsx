@@ -47,6 +47,18 @@ const ProductDetail: React.FC = () => {
     alert(`Producto "${product.name}" añadido al carrito.`);
   };
 
+  const handleBuyNow = () => {
+    if (!product) return;
+    addToCart(product); // Se añade el producto al carrito, si es que aún no está
+    // Aquí podrías redirigir al proceso de pago o checkout
+    alert(`Has comprado el producto "${product.name}".`);
+    // Ejemplo: navigate('/checkout');
+  };
+
+  const handleViewCart = () => {
+    navigate('/cart'); // Asegúrate de tener la ruta "/cart" configurada para ver el carrito
+  };
+
   if (!product) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -131,7 +143,18 @@ const ProductDetail: React.FC = () => {
                   <FaShoppingCart className="w-5 h-5 mr-2" />
                   Añadir al carrito
                 </button>
-                {/* Puedes agregar aquí otros botones, como "añadir a favoritos" o "comprar ahora" */}
+                <button
+                  onClick={handleBuyNow}
+                  className="flex items-center justify-center py-2.5 px-5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800 transition transform duration-300 hover:scale-105 ml-2"
+                >
+                  Comprar ahora
+                </button>
+                <button
+                  onClick={handleViewCart}
+                  className="flex items-center justify-center py-2.5 px-5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 transition transform duration-300 hover:scale-105 ml-2"
+                >
+                  Ver carrito
+                </button>
               </div>
               <hr className="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
               {product.description ? (
