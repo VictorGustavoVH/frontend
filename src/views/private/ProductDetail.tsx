@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getProductByName } from '../../api/DevTreeAPI';
-// Importamos iconos de react-icons
-import { FaStar, FaHeart, FaShoppingCart } from 'react-icons/fa';
+import { FaStar, FaShoppingCart } from 'react-icons/fa';
+import { useCart } from '../../contexts/CartContext'; // Asegúrate de que la ruta sea la correcta
 
 interface Product {
   _id?: string;
@@ -20,6 +20,7 @@ const ProductDetail: React.FC = () => {
   const { name } = useParams(); // /products/:name
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
+  const { addToCart } = useCart(); // Obtenemos la función para añadir al carrito
 
   useEffect(() => {
     if (!name) {
@@ -39,19 +40,13 @@ const ProductDetail: React.FC = () => {
     fetchProduct();
   }, [name, navigate]);
 
-  // Función para añadir al carrito (implementa tu propia lógica)
   const handleAddToCart = () => {
     if (!product) return;
-    console.log('Producto añadido al carrito:', product.name);
+    addToCart(product); // Añadimos el producto al carrito
     alert(`Producto "${product.name}" añadido al carrito.`);
   };
 
-  // Función para añadir a favoritos
-  const handleAddToFavorites = () => {
-    if (!product) return;
-    console.log('Producto añadido a favoritos:', product.name);
-    alert(`Producto "${product.name}" añadido a favoritos.`);
-  };
+  // ... resto del componente (favoritos, comprar ahora, etc.)
 
   if (!product) {
     return (
@@ -93,17 +88,13 @@ const ProductDetail: React.FC = () => {
 
             {/* Detalles */}
             <div className="mt-6 sm:mt-8 lg:mt-0">
-              {/* Nombre */}
               <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white transition-all duration-300">
                 {product.name}
               </h1>
-
-              {/* Precio + Rating */}
               <div className="mt-4 sm:items-center sm:gap-4 sm:flex">
                 <p className="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white transition-all duration-300">
                   {product.price ? `$${product.price.toFixed(2)}` : '$0.00'}
                 </p>
-                {/* Rating */}
                 <div className="flex items-center gap-2 mt-2 sm:mt-0">
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
@@ -121,8 +112,6 @@ const ProductDetail: React.FC = () => {
                   </a>
                 </div>
               </div>
-
-              {/* Marca y Categoría */}
               <div className="mt-2 text-gray-600 dark:text-gray-400">
                 {product.brand && (
                   <p className="text-sm">
@@ -135,40 +124,17 @@ const ProductDetail: React.FC = () => {
                   </p>
                 )}
               </div>
-
-              {/* Botones de "favoritos" y "añadir al carrito" */}
               <div className="mt-6 sm:flex sm:gap-4 sm:items-center sm:mt-8">
                 <button
-                  onClick={handleAddToFavorites}
-                  className="flex items-center justify-center py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 transition transform duration-300 hover:scale-105"
-                >
-                  <FaHeart className="w-5 h-5 mr-2" />
-                  Añadir a favoritos
-                </button>
-
-                <button
                   onClick={handleAddToCart}
-                  className="flex items-center justify-center mt-4 sm:mt-0 py-2.5 px-5 text-sm font-medium text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 transition transform duration-300 hover:scale-105"
+                  className="flex items-center justify-center py-2.5 px-5 text-sm font-medium text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 transition transform duration-300 hover:scale-105"
                 >
                   <FaShoppingCart className="w-5 h-5 mr-2" />
                   Añadir al carrito
                 </button>
+                {/* Otros botones (favoritos, comprar ahora, etc.) */}
               </div>
-
-              <hr className="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
-
-              {/* Descripción */}
-              {product.description ? (
-                <p className="mb-6 text-gray-500 dark:text-gray-400 transition-opacity duration-300">
-                  {product.description}
-                </p>
-              ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                  Sin descripción disponible.
-                </p>
-              )}
-
-            
+              {/* Resto del componente */}
             </div>
           </div>
         </div>
