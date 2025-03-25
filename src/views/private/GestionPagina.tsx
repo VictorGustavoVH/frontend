@@ -1,4 +1,3 @@
-// GestionPagina.tsx
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -6,6 +5,7 @@ import { isAxiosError } from 'axios';
 import api from '../../config/axios';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 export type PageContent = {
   quienesSomos: string;
@@ -19,26 +19,15 @@ export type PageContent = {
 
 const GestionPagina: React.FC = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PageContent>();
-
-  // Define el identificador de la página a gestionar (por ejemplo "contenido")
   const paginaName = "contenido";
 
-  // Cargar el contenido actual cuando se monta el componente
   useEffect(() => {
     api.get(`/admin/pagina/${paginaName}`)
       .then((res) => {
-        reset({
-          quienesSomos: res.data.quienesSomos,
-          mision: res.data.mision,
-          vision: res.data.vision,
-          valores: res.data.valores,
-          preguntasFrecuentes: res.data.preguntasFrecuentes,
-          contacto: res.data.contacto,
-          terminos: res.data.terminos,
-        });
+        reset(res.data);
       })
       .catch((err) => {
-        toast.error("Error al cargar el contenido");
+        toast.error("❌ Error al cargar el contenido");
         console.error(err);
       });
   }, [paginaName, reset]);
@@ -46,13 +35,24 @@ const GestionPagina: React.FC = () => {
   const onSubmit = async (data: PageContent) => {
     try {
       await api.patch(`/admin/pagina/${paginaName}`, data);
-      toast.success("Contenido actualizado correctamente");
+
+      toast.custom(() => (
+        <div className="bg-green-100 text-green-800 px-6 py-4 rounded shadow-md flex items-center space-x-2 max-w-md mx-auto">
+          <CheckCircle2 className="w-6 h-6" />
+          <span>Contenido actualizado correctamente</span>
+        </div>
+      ));
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
-        toast.error(String(error.response.data.error));
-      } else {
-        toast.error("Error al actualizar el contenido");
-      }
+      const errorMsg = isAxiosError(error) && error.response
+        ? String(error.response.data.error)
+        : "Error al actualizar el contenido";
+
+      toast.custom(() => (
+        <div className="bg-red-100 text-red-800 px-6 py-4 rounded shadow-md flex items-center space-x-2 max-w-md mx-auto">
+          <AlertCircle className="w-6 h-6" />
+          <span>{errorMsg}</span>
+        </div>
+      ));
       console.error(error);
     }
   };
@@ -60,92 +60,56 @@ const GestionPagina: React.FC = () => {
   return (
     <div>
       <Header />
-      <div className="container mx-auto p-4">
-        <h2 className="text-3xl font-bold text-center mb-6">Gestión de Contenido de la Página</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* ¿Quiénes Somos? */}
-          <div>
-            <label className="block text-lg font-medium text-blue-700">¿Quiénes Somos?</label>
-            <textarea 
-              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
-              {...register('quienesSomos', { required: 'Este campo es obligatorio' })}
-            />
-            {errors.quienesSomos && <p className="text-red-500 text-sm">{errors.quienesSomos.message}</p>}
-          </div>
-
-          {/* Misión */}
-          <div>
-            <label className="block text-lg font-medium text-blue-700">Misión</label>
-            <textarea 
-              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
-              {...register('mision', { required: 'Este campo es obligatorio' })}
-            />
-            {errors.mision && <p className="text-red-500 text-sm">{errors.mision.message}</p>}
-          </div>
-
-          {/* Visión */}
-          <div>
-            <label className="block text-lg font-medium text-blue-700">Visión</label>
-            <textarea 
-              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
-              {...register('vision', { required: 'Este campo es obligatorio' })}
-            />
-            {errors.vision && <p className="text-red-500 text-sm">{errors.vision.message}</p>}
-          </div>
-
-          {/* Valores */}
-          <div>
-            <label className="block text-lg font-medium text-blue-700">Valores</label>
-            <textarea 
-              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
-              {...register('valores', { required: 'Este campo es obligatorio' })}
-            />
-            {errors.valores && <p className="text-red-500 text-sm">{errors.valores.message}</p>}
-          </div>
-
-          {/* Preguntas Frecuentes (Formato JSON) */}
-          <div>
-            <label className="block text-lg font-medium text-blue-700">
-              Preguntas Frecuentes (Formato JSON)
-            </label>
-            <textarea 
-              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
-              {...register('preguntasFrecuentes', { required: 'Este campo es obligatorio' })}
-              placeholder={`[ { "id": "faq1", "title": "Pregunta 1", "description": "Descripción", "icon": "❓", "content": "<p>Respuesta</p>" } ]`}
-            />
-            {errors.preguntasFrecuentes && <p className="text-red-500 text-sm">{errors.preguntasFrecuentes.message}</p>}
-          </div>
-
-          {/* Contacto */}
-          <div>
-            <label className="block text-lg font-medium text-blue-700">Contacto</label>
-            <textarea 
-              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
-              {...register('contacto')}
-            />
-          </div>
-
-          {/* Términos y Condiciones */}
-          <div>
-            <label className="block text-lg font-medium text-blue-700">Términos y Condiciones</label>
-            <textarea 
-              className="w-full p-2 mt-1 rounded border border-blue-300 focus:ring-2 focus:ring-blue-400"
-              {...register('terminos')}
-            />
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-4xl font-bold text-center mb-10 text-blue-800">
+          Gestión de Contenido de la Página
+        </h2>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 bg-white shadow-xl rounded-lg p-8"
+        >
+          {/* Render de campos */}
+          {[
+            { label: '¿Quiénes Somos?', name: 'quienesSomos' },
+            { label: 'Misión', name: 'mision' },
+            { label: 'Visión', name: 'vision' },
+            { label: 'Valores', name: 'valores' },
+            { label: 'Preguntas Frecuentes (Formato JSON)', name: 'preguntasFrecuentes', placeholder: `[ { "id": "faq1", "title": "Pregunta 1", "description": "Descripción", "icon": "❓", "content": "<p>Respuesta</p>" } ]` },
+            { label: 'Contacto', name: 'contacto' },
+            { label: 'Términos y Condiciones', name: 'terminos' },
+          ].map(({ label, name, placeholder }) => (
+            <div key={name}>
+              <label className="block text-lg font-semibold text-blue-700 mb-1">
+                {label}
+              </label>
+              <textarea
+                placeholder={placeholder}
+                className="w-full min-h-[100px] p-3 rounded border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                {...register(name as keyof PageContent, {
+                  required: name !== 'contacto' && name !== 'terminos'
+                    ? 'Este campo es obligatorio' : false,
+                })}
+              />
+              {errors[name as keyof PageContent] && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors[name as keyof PageContent]?.message}
+                </p>
+              )}
+            </div>
+          ))}
 
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-lg transition duration-300"
+            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-lg transition-all duration-300 shadow-md"
           >
-            Actualizar Contenido
+            💾 Actualizar Contenido
           </button>
         </form>
       </div>
       <Footer />
       <style>{`
         .container {
-          max-width: 800px;
+          max-width: 900px;
         }
       `}</style>
     </div>

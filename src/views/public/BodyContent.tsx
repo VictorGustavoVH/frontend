@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../config/axios';
 import { FaLightbulb, FaCheckCircle, FaLeaf, FaUsers, FaBalanceScale } from "react-icons/fa";
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 const BodyContent: React.FC = () => {
   const [content, setContent] = useState({
@@ -27,6 +29,7 @@ const BodyContent: React.FC = () => {
   }, []);
 
   return (
+    <div><Header/>
     <motion.div
       className="container"
       initial={{ opacity: 0 }}
@@ -143,6 +146,8 @@ const BodyContent: React.FC = () => {
         }
       `}</style>
     </motion.div>
+    <Footer/>
+    </div>
   );
 };
 
