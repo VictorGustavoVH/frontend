@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getProducts } from '../../api/DevTreeAPI';
-// Importamos iconos de react-icons
 import { FaSearch, FaFilter, FaTh, FaSpinner, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 interface Product {
@@ -13,6 +12,8 @@ interface Product {
   image?: string;
   brand?: string;
   price?: number;
+  // Si tienes un id único, puedes agregarlo:
+  // id: string;
 }
 
 const Catalogo: React.FC = () => {
@@ -126,6 +127,9 @@ const Catalogo: React.FC = () => {
       <Header />
 
       <div className="max-w-7xl mx-auto p-6">
+        {/* Título principal */}
+        <h1 className="text-4xl font-bold text-gray-800 capitalize mb-6">Catálogo</h1>
+
         {/* Fila con Buscador, Botón Categoría, Botón Filtros */}
         <div className="flex items-center space-x-4 mb-6">
           {/* Buscador con icono */}
@@ -249,7 +253,7 @@ const Catalogo: React.FC = () => {
                 currentProducts.map((product) => (
                   <Link 
                     to={`/products/${encodeURIComponent(product.name)}`} 
-                    key={product.name} 
+                    key={product.name} // Si cuentas con un id, reemplázalo aquí.
                     className="block no-underline focus:outline-none"
                   >
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col transform transition duration-300 hover:scale-105">
@@ -264,7 +268,9 @@ const Catalogo: React.FC = () => {
                         />
                       )}
                       <div className="p-4 flex flex-col flex-grow">
-                        <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+                        <h3 className="text-xl font-semibold text-gray-800 capitalize">
+                          {product.name}
+                        </h3>
                         {product.brand && (
                           <p className="text-sm text-gray-600">
                             <strong>Marca:</strong> {product.brand}
