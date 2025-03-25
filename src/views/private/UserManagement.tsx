@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import api from '../../config/axios';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
@@ -8,7 +8,7 @@ interface User {
   _id: string;
   username: string;
   email: string;
-  rol: 'admin' | 'usuario'; // Cambiado a "rol"
+  rol: 'usuario' | 'admin';
 }
 
 const UserManagement: React.FC = () => {
@@ -21,7 +21,7 @@ const UserManagement: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      // Asegúrate de que el backend retorne el campo "rol"
+      // Asegúrate que el backend retorne el campo "rol"
       const response = await api.get('/users');
       setUsers(response.data);
     } catch (error) {
@@ -39,10 +39,10 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const updateRole = async (id: string, currentRol: 'admin' | 'usuario') => {
+  const updateRole = async (id: string, currentRol: 'usuario' | 'admin') => {
     const newRol = currentRol === 'admin' ? 'usuario' : 'admin';
     try {
-      // Envía "rol" en lugar de "role"
+      // Enviar "rol" en lugar de "role"
       await api.patch(`/users/${id}`, { rol: newRol });
       setUsers(prevUsers =>
         prevUsers.map(user =>
