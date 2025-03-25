@@ -3,7 +3,7 @@ import api from '../../config/axios';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { FaSearch, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
+import { FaSearch, FaTrash } from 'react-icons/fa';
 
 interface User {
   _id: string;
@@ -15,7 +15,8 @@ interface User {
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState('');
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
 
   useEffect(() => {
     fetchUsers();
@@ -40,26 +41,31 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const updateRole = async (id: string, currentRole: 'admin' | 'usuario') => {
-    const newRole = currentRole === 'admin' ? 'usuario' : 'admin';
+  const updateRole = async (id: string, newRole: 'admin' | 'usuario') => {
     try {
-      await api.patch(`/users/${id}`, { rol: newRole }); // Cambiado a "rol"
+      await api.patch(`/users/${id}`, { rol: newRole });
       setUsers(prevUsers =>
         prevUsers.map(user =>
           user._id === id ? { ...user, rol: newRole } : user
         )
       );
       toast.success(`Rol actualizado a ${newRole}`);
-      await fetchUsers();
     } catch (error) {
       toast.error('Error al actualizar rol');
     }
   };
-  
 
   const filteredUsers = users.filter(user =>
     user.username.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Cálculo de paginación
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <div>
@@ -73,11 +79,13 @@ const UserManagement: React.FC = () => {
               type="text"
               placeholder="Buscar usuarios..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
           </div>
-          {/* Aquí podrías agregar un botón para "Agregar Usuario" si lo requieres */}
         </div>
 
         {/* Tabla de usuarios */}
@@ -87,51 +95,40 @@ const UserManagement: React.FC = () => {
               <tr>
                 <th className="px-4 py-3 text-left">Nombre</th>
                 <th className="px-4 py-3 text-left">Correo</th>
-                <th className="px-4 py-3 text-left">Rol</th>
+                <th className="px-4 py-3 text-left">Rol Actual</th>
                 <th className="px-4 py-3 text-left">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredUsers.map(user => (
-                <tr key={user._id} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+              {currentUsers.map(user => (
+                <tr
+                  key={user._id}
+                  className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
                   <td className="px-4 py-3">{user.username}</td>
                   <td className="px-4 py-3">{user.email}</td>
                   <td className="px-4 py-3">{user.rol}</td>
-                  <td className="px-4 py-3 relative">
-                    <button
-                      onClick={() =>
-                        setOpenDropdownId(openDropdownId === user._id ? null : user._id)
+                  <td className="px-4 py-3 flex items-center space-x-4">
+                    <select
+                      defaultValue={user.rol}
+                      onChange={(e) =>
+                        updateRole(user._id, e.target.value as 'admin' | 'usuario')
                       }
-                      className="text-gray-600 hover:text-gray-800 focus:outline-none transition-transform duration-300"
+                      className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
                     >
-                      <FaEllipsisV />
+                      <option value="usuario">Usuario</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <button
+                      onClick={() => deleteUser(user._id)}
+                      className="flex items-center px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 transition-all duration-300"
+                    >
+                      <FaTrash className="mr-2" /> Eliminar
                     </button>
-                    {openDropdownId === user._id && (
-                      <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10 transition-all duration-200 transform origin-top">
-                        <button
-                          onClick={() => {
-                            updateRole(user._id, user.rol);
-                            setOpenDropdownId(null);
-                          }}
-                          className="flex items-center w-full px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                        >
-                          <FaEdit className="mr-2" /> <span>Cambiar Rol</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            deleteUser(user._id);
-                            setOpenDropdownId(null);
-                          }}
-                          className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <FaTrash className="mr-2" /> <span>Eliminar</span>
-                        </button>
-                      </div>
-                    )}
                   </td>
                 </tr>
               ))}
-              {filteredUsers.length === 0 && (
+              {currentUsers.length === 0 && (
                 <tr>
                   <td colSpan={4} className="text-center text-gray-500 py-4">
                     No se encontraron usuarios.
@@ -140,6 +137,39 @@ const UserManagement: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-4">
+          <nav className="flex space-x-2">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded-md hover:bg-blue-100 transition-all duration-300 disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(number => (
+              <button
+                key={number}
+                onClick={() => paginate(number)}
+                className={`px-3 py-1 border rounded-md transition-all duration-300 ${
+                  currentPage === number
+                    ? 'bg-blue-500 text-white'
+                    : 'hover:bg-blue-100'
+                }`}
+              >
+                {number}
+              </button>
+            ))}
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded-md hover:bg-blue-100 transition-all duration-300 disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </nav>
         </div>
       </div>
       <Footer />
