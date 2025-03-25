@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CartProvider } from './contexts/CartContext'; // Asegúrate que la ruta es correcta
 import LoginView from './views/public/Login';
 import RegisterView from './views/public/Register';
 import Catalogo from './views/public/Catalogo';
@@ -18,60 +19,61 @@ import LinkTreeView from './views/private/LinkTreeView';
 import UpdateProfile from './views/private/UpdateProfile';
 import UserManagement from './views/private/UserManagement';
 import ProductCrud from './views/private/ProductCrud';
-import Pagina from './views/private/GestionPagina'
+import Pagina from './views/private/GestionPagina';
 
 export default function Router() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Rutas de autenticación */}
-        <Route path="/login" element={<LoginView />} />
-        <Route path="/register" element={<RegisterView />} />
+    <CartProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Rutas de autenticación */}
+          <Route path="/login" element={<LoginView />} />
+          <Route path="/register" element={<RegisterView />} />
 
-        {/* Rutas del panel de administración */}
-        <Route path="/admin" element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
-            <Route index element={<LinkTreeView />} />
-            <Route path="product/GestionProductos/Register" element={<RegisterProduct />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="product/GestionProductos"element={<ProductCrud/>}/>
-            <Route path="pagina" element={<Pagina />} />
-            
+          {/* Rutas del panel de administración */}
+          <Route path="/admin" element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route index element={<LinkTreeView />} />
+              <Route path="product/GestionProductos/Register" element={<RegisterProduct />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="product/GestionProductos" element={<ProductCrud />} />
+              <Route path="pagina" element={<Pagina />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* Ruta protegida para el dashboard del dispositivo */}
-        <Route path="/mi-dispositivo" element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
-            <Route index element={<SmartViewDashboard />} />
+          {/* Ruta protegida para el dashboard del dispositivo */}
+          <Route path="/mi-dispositivo" element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route index element={<SmartViewDashboard />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* Ruta protegida para registrar dispositivo */}
-        <Route path="/devices/register" element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
-            <Route index element={<RegisterDeviceView />} />
+          {/* Ruta protegida para registrar dispositivo */}
+          <Route path="/devices/register" element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route index element={<RegisterDeviceView />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* Rutas públicas */}
-        <Route path="/" element={<HomeView />} />
-        <Route path="/products" element={<Catalogo />} />
-        <Route path="/products/:name" element={<ProductDetail />} />
-        <Route path="/preguntasFrecuentes" element={<PreguntasFrecuente />} />
-        <Route path="/quienes-somos" element={<BodyContent />} />
-        <Route path="/contenido" element={<BodyContent />} />
-        <Route path="/inicio" element={<Inicio />} />
-        <Route path="/perfil" element={<UpdateProfile />} />
+          {/* Rutas públicas */}
+          <Route path="/" element={<HomeView />} />
+          <Route path="/products" element={<Catalogo />} />
+          <Route path="/products/:name" element={<ProductDetail />} />
+          <Route path="/preguntasFrecuentes" element={<PreguntasFrecuente />} />
+          <Route path="/quienes-somos" element={<BodyContent />} />
+          <Route path="/contenido" element={<BodyContent />} />
+          <Route path="/inicio" element={<Inicio />} />
+          <Route path="/perfil" element={<UpdateProfile />} />
 
-        {/* Página 404 */}
-        <Route path="/404" element={<AuthLayout />}>
-          <Route index element={<NotFoundView />} />
-        </Route>
+          {/* Página 404 */}
+          <Route path="/404" element={<AuthLayout />}>
+            <Route index element={<NotFoundView />} />
+          </Route>
 
-        {/* Captura de rutas no encontradas */}
-        <Route path="*" element={<NotFoundView />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Captura de rutas no encontradas */}
+          <Route path="*" element={<NotFoundView />} />
+        </Routes>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
