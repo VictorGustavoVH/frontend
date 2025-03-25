@@ -1,5 +1,6 @@
+// src/Router.tsx (o donde administres tus rutas)
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { CartProvider } from './contexts/CartContext'; // Asegúrate que la ruta es correcta
+import { CartProvider } from './contexts/CartContext';
 import LoginView from './views/public/Login';
 import RegisterView from './views/public/Register';
 import Catalogo from './views/public/Catalogo';
@@ -14,6 +15,7 @@ import RegisterProduct from './views/private/RegisterProductView';
 import RegisterDeviceView from './views/private/RegisterDeviceView';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProductDetail from './views/private/ProductDetail';
+import CartView from './views/private/CartView';
 import SmartViewDashboard from './views/private/SmartViewDashboard';
 import LinkTreeView from './views/private/LinkTreeView';
 import UpdateProfile from './views/private/UpdateProfile';
@@ -34,7 +36,10 @@ export default function Router() {
           <Route path="/admin" element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
               <Route index element={<LinkTreeView />} />
-              <Route path="product/GestionProductos/Register" element={<RegisterProduct />} />
+              <Route
+                path="product/GestionProductos/Register"
+                element={<RegisterProduct />}
+              />
               <Route path="users" element={<UserManagement />} />
               <Route path="product/GestionProductos" element={<ProductCrud />} />
               <Route path="pagina" element={<Pagina />} />
@@ -59,6 +64,7 @@ export default function Router() {
           <Route path="/" element={<HomeView />} />
           <Route path="/products" element={<Catalogo />} />
           <Route path="/products/:name" element={<ProductDetail />} />
+          <Route path="/cart" element={<CartView />} />
           <Route path="/preguntasFrecuentes" element={<PreguntasFrecuente />} />
           <Route path="/quienes-somos" element={<BodyContent />} />
           <Route path="/contenido" element={<BodyContent />} />

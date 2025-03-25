@@ -1,3 +1,4 @@
+// src/context/CartContext.tsx
 import  { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define la estructura de un ítem del carrito
@@ -7,7 +8,7 @@ export interface CartItem {
     name: string;
     price?: number;
     image?: string;
-    // Otros campos según tu modelo de producto
+    // Agrega otros campos según lo requieras
   };
   quantity: number;
 }

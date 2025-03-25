@@ -1,10 +1,11 @@
+// src/views/private/ProductDetail.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getProductByName } from '../../api/DevTreeAPI';
 import { FaStar, FaShoppingCart } from 'react-icons/fa';
-import { useCart } from '../../contexts/CartContext'; // Asegúrate de que la ruta sea la correcta
+import { useCart } from '../../contexts/CartContext';
 
 interface Product {
   _id?: string;
@@ -17,10 +18,10 @@ interface Product {
 }
 
 const ProductDetail: React.FC = () => {
-  const { name } = useParams(); // /products/:name
+  const { name } = useParams(); // Ruta: /products/:name
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
-  const { addToCart } = useCart(); // Obtenemos la función para añadir al carrito
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (!name) {
@@ -42,11 +43,9 @@ const ProductDetail: React.FC = () => {
 
   const handleAddToCart = () => {
     if (!product) return;
-    addToCart(product); // Añadimos el producto al carrito
+    addToCart(product);
     alert(`Producto "${product.name}" añadido al carrito.`);
   };
-
-  // ... resto del componente (favoritos, comprar ahora, etc.)
 
   if (!product) {
     return (
@@ -132,9 +131,18 @@ const ProductDetail: React.FC = () => {
                   <FaShoppingCart className="w-5 h-5 mr-2" />
                   Añadir al carrito
                 </button>
-                {/* Otros botones (favoritos, comprar ahora, etc.) */}
+                {/* Puedes agregar aquí otros botones, como "añadir a favoritos" o "comprar ahora" */}
               </div>
-              {/* Resto del componente */}
+              <hr className="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
+              {product.description ? (
+                <p className="mb-6 text-gray-500 dark:text-gray-400 transition-opacity duration-300">
+                  {product.description}
+                </p>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Sin descripción disponible.
+                </p>
+              )}
             </div>
           </div>
         </div>
