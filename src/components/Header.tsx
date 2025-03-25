@@ -19,6 +19,7 @@ const ABOUT_LINKS = [
   { label: "Quiénes Somos", path: "/quienes-somos" },
   { label: "Preguntas frecuentes", path: "/preguntasFrecuentes" },
   { label: "Términos y Condiciones", path: "/terminos-condiciones" },
+  { label: "Contacto", path: "/Contacto" },
 ];
 
 const Header = () => {

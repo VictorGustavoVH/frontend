@@ -22,6 +22,8 @@ import UpdateProfile from './views/private/UpdateProfile';
 import UserManagement from './views/private/UserManagement';
 import ProductCrud from './views/private/ProductCrud';
 import Pagina from './views/private/GestionPagina';
+import ContactoView from './views/public/ContactoView';
+import TerminosView from './views/public/TerminosView';
 
 export default function Router() {
   return (
@@ -70,7 +72,8 @@ export default function Router() {
           <Route path="/contenido" element={<BodyContent />} />
           <Route path="/inicio" element={<Inicio />} />
           <Route path="/perfil" element={<UpdateProfile />} />
-
+          <Route path="/contacto" element={<ContactoView />} />
+          <Route path="/terminos" element={<TerminosView />} />
           {/* Página 404 */}
           <Route path="/404" element={<AuthLayout />}>
             <Route index element={<NotFoundView />} />
