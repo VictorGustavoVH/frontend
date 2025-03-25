@@ -18,6 +18,7 @@ import LinkTreeView from './views/private/LinkTreeView';
 import UpdateProfile from './views/private/UpdateProfile';
 import UserManagement from './views/private/UserManagement';
 import ProductCrud from './views/private/ProductCrud';
+import Pagina from './views/private/GestionPagina'
 
 export default function Router() {
   return (
@@ -34,6 +35,8 @@ export default function Router() {
             <Route path="product/GestionProductos/Register" element={<RegisterProduct />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="product/GestionProductos"element={<ProductCrud/>}/>
+            <Route path="pagina" element={<Pagina />} />
+            
           </Route>
         </Route>
 
