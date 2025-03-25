@@ -9,7 +9,7 @@ interface User {
   _id: string;
   username: string;
   email: string;
-  role: 'admin' | 'usuario';
+  rol: 'admin' | 'usuario';
 }
 
 const UserManagement: React.FC = () => {
@@ -95,7 +95,7 @@ const UserManagement: React.FC = () => {
                 <tr key={user._id} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
                   <td className="px-4 py-3">{user.username}</td>
                   <td className="px-4 py-3">{user.email}</td>
-                  <td className="px-4 py-3">{user.role}</td>
+                  <td className="px-4 py-3">{user.rol}</td>
                   <td className="px-4 py-3 relative">
                     <button
                       onClick={() =>
@@ -109,7 +109,7 @@ const UserManagement: React.FC = () => {
                       <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10 transition-all duration-200 transform origin-top">
                         <button
                           onClick={() => {
-                            updateRole(user._id, user.role);
+                            updateRole(user._id, user.rol);
                             setOpenDropdownId(null);
                           }}
                           className="flex items-center w-full px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors"
