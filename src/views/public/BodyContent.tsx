@@ -106,7 +106,7 @@ const BodyContent: React.FC = () => {
 export default BodyContent;
 
 // CSS dentro del mismo archivo
-import "./App.css";
+
 
 const styles = `
 body {
