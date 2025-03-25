@@ -44,7 +44,7 @@ const GestionPagina: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     axios.patch('/api/pagina/gestion', pagina) // Asegúrate de tener implementado este endpoint
-      .then(response => {
+      .then(() => {
         setMessage('Datos actualizados correctamente');
       })
       .catch(error => {
