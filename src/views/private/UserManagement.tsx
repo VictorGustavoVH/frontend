@@ -3,7 +3,6 @@ import api from '../../config/axios';
 import { toast } from 'sonner';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { FaSearch, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
 
 interface User {
   _id: string;
@@ -15,7 +14,6 @@ interface User {
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState('');
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -33,7 +31,7 @@ const UserManagement: React.FC = () => {
   const deleteUser = async (id: string) => {
     try {
       await api.delete(`/users/${id}`);
-      setUsers(users.filter(user => user._id !== id));
+      setUsers(prev => prev.filter(user => user._id !== id));
       toast.success('Usuario eliminado correctamente');
     } catch (error) {
       toast.error('Error al eliminar usuario');
@@ -50,7 +48,6 @@ const UserManagement: React.FC = () => {
         )
       );
       toast.success(`Rol actualizado a ${newRole}`);
-      await fetchUsers();
     } catch (error) {
       toast.error('Error al actualizar rol');
     }
@@ -67,7 +64,11 @@ const UserManagement: React.FC = () => {
         {/* Barra de búsqueda */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
           <div className="relative mb-4 sm:mb-0 sm:w-1/2">
-            <FaSearch className="absolute top-3 left-3 text-gray-400" />
+            <span className="absolute top-3 left-3 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M16.65 16.65A7.5 7.5 0 1116.65 2.4a7.5 7.5 0 010 14.25z" />
+              </svg>
+            </span>
             <input
               type="text"
               placeholder="Buscar usuarios..."
@@ -92,41 +93,23 @@ const UserManagement: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredUsers.map(user => (
-                <tr key={user._id} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+                <tr key={user._id} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   <td className="px-4 py-3">{user.username}</td>
                   <td className="px-4 py-3">{user.email}</td>
                   <td className="px-4 py-3">{user.role}</td>
-                  <td className="px-4 py-3 relative">
+                  <td className="px-4 py-3 space-x-2">
                     <button
-                      onClick={() =>
-                        setOpenDropdownId(openDropdownId === user._id ? null : user._id)
-                      }
-                      className="text-gray-600 hover:text-gray-800 focus:outline-none transition-transform duration-300"
+                      onClick={() => updateRole(user._id, user.role)}
+                      className="px-3 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
                     >
-                      <FaEllipsisV />
+                      Cambiar Rol
                     </button>
-                    {openDropdownId === user._id && (
-                      <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10 transition-all duration-200 transform origin-top">
-                        <button
-                          onClick={() => {
-                            updateRole(user._id, user.role);
-                            setOpenDropdownId(null);
-                          }}
-                          className="flex items-center w-full px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                        >
-                          <FaEdit className="mr-2" /> <span>Cambiar Rol</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            deleteUser(user._id);
-                            setOpenDropdownId(null);
-                          }}
-                          className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <FaTrash className="mr-2" /> <span>Eliminar</span>
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      onClick={() => deleteUser(user._id)}
+                      className="px-3 py-2 text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}
