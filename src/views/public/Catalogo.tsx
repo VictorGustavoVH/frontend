@@ -41,7 +41,7 @@ const Catalogo: React.FC = () => {
         const productoPrincipal = data.find(product => product.name === 'Ventana_Automatizada');
         if (productoPrincipal) {
           // Separa el producto principal del resto
-          const resto = data.filter(product => product.name !== 'Producto Principal');
+          const resto = data.filter(product => product.name !== 'Ventana_Automatizada');
           // Coloca el producto principal al inicio
           setProducts([productoPrincipal, ...resto]);
         } else {
