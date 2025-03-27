@@ -57,11 +57,8 @@ export default function Router() {
           </Route>
 
           {/* Ruta protegida para registrar dispositivo */}
-          <Route path="/devices/register" element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route index element={<RegisterDeviceView />} />
-            </Route>
-          </Route>
+          <Route path="/devices/register" element={<RegisterDeviceView />} />
+            
 
           {/* Rutas públicas */}
           <Route path="/" element={<HomeView />} />
