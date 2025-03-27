@@ -38,7 +38,7 @@ const Catalogo: React.FC = () => {
       try {
         const data = await getProducts();
         // Identifica el producto principal (por nombre, en este ejemplo "Producto Principal")
-        const productoPrincipal = data.find(product => product.name === 'Producto Principal');
+        const productoPrincipal = data.find(product => product.name === 'Ventana_Automatizada');
         if (productoPrincipal) {
           // Separa el producto principal del resto
           const resto = data.filter(product => product.name !== 'Producto Principal');
