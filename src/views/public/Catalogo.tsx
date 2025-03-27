@@ -3,7 +3,15 @@ import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getProducts } from '../../api/DevTreeAPI';
-import { FaSearch, FaFilter, FaTh, FaSpinner, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { 
+  FaSearch, 
+  FaFilter, 
+  FaTh, 
+  FaSpinner, 
+  FaArrowLeft, 
+  FaArrowRight, 
+  FaStar // Importamos el icono especial
+} from 'react-icons/fa';
 
 interface Product {
   name: string;
@@ -58,8 +66,6 @@ const Catalogo: React.FC = () => {
     }
     fetchProducts();
   }, []);
-  
-  
 
   // Manejadores de cambios
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -266,6 +272,9 @@ const Catalogo: React.FC = () => {
                       <div className="p-4 flex flex-col flex-grow">
                         <h3 className="text-xl font-semibold text-gray-800 capitalize">
                           {product.name}
+                          {product.name.toLowerCase() === 'ventana_automatizada' && (
+                            <FaStar className="inline text-yellow-500 ml-2" title="Producto destacado" />
+                          )}
                         </h3>
                         {product.brand && (
                           <p className="text-sm text-gray-600">
