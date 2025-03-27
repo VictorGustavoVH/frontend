@@ -37,12 +37,13 @@ const Catalogo: React.FC = () => {
     async function fetchProducts() {
       try {
         const data = await getProducts();
-        // Identifica el producto principal (por nombre, en este ejemplo "Producto Principal")
-        const productoPrincipal = data.find(product => product.name === 'Ventana_Automatizada');
+        console.log(data); // Verifica la data en la consola
+        // Compara en minúsculas para evitar problemas de mayúsculas/minúsculas
+        const productoPrincipal = data.find(
+          product => product.name.toLowerCase() === 'ventana_automatizada'
+        );
         if (productoPrincipal) {
-          // Separa el producto principal del resto
-          const resto = data.filter(product => product.name !== 'Ventana_Automatizada');
-          // Coloca el producto principal al inicio
+          const resto = data.filter(product => product.name.toLowerCase() !== 'ventana_automatizada');
           setProducts([productoPrincipal, ...resto]);
         } else {
           setProducts(data);
@@ -55,6 +56,7 @@ const Catalogo: React.FC = () => {
     }
     fetchProducts();
   }, []);
+  
 
   // Manejadores de cambios
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
