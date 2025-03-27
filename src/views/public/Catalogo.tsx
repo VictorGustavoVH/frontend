@@ -12,8 +12,6 @@ interface Product {
   image?: string;
   brand?: string;
   price?: number;
-  // Si tienes un id único, puedes agregarlo:
-  // id: string;
 }
 
 const Catalogo: React.FC = () => {
@@ -39,7 +37,16 @@ const Catalogo: React.FC = () => {
     async function fetchProducts() {
       try {
         const data = await getProducts();
-        setProducts(data);
+        // Identifica el producto principal (por nombre, en este ejemplo "Producto Principal")
+        const productoPrincipal = data.find(product => product.name === 'Producto Principal');
+        if (productoPrincipal) {
+          // Separa el producto principal del resto
+          const resto = data.filter(product => product.name !== 'Producto Principal');
+          // Coloca el producto principal al inicio
+          setProducts([productoPrincipal, ...resto]);
+        } else {
+          setProducts(data);
+        }
       } catch (error) {
         console.error('Error al obtener productos:', error);
       } finally {
@@ -49,18 +56,14 @@ const Catalogo: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // Manejadores
+  // Manejadores de cambios
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
 
   const handleCategoryClick = (categoryValue: string) => {
-    if (selectedCategory === categoryValue) {
-      setSelectedCategory('');
-    } else {
-      setSelectedCategory(categoryValue);
-    }
+    setSelectedCategory(selectedCategory === categoryValue ? '' : categoryValue);
     setShowCategoryMenu(false);
     setCurrentPage(1);
   };
@@ -82,27 +85,19 @@ const Catalogo: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // Filtrado
+  // Filtrado de productos
   const filteredProducts = products.filter((product) => {
     const matchSearch = searchQuery
       ? product.name.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
-
-    const matchCategory = selectedCategory
-      ? product.category === selectedCategory
-      : true;
-
-    const matchBrand = selectedBrand
-      ? product.brand === selectedBrand
-      : true;
-
+    const matchCategory = selectedCategory ? product.category === selectedCategory : true;
+    const matchBrand = selectedBrand ? product.brand === selectedBrand : true;
     const matchPrice = (() => {
       if (product.price === undefined) return true;
       if (typeof minPrice === 'number' && product.price < minPrice) return false;
       if (typeof maxPrice === 'number' && product.price > maxPrice) return false;
       return true;
     })();
-
     return matchSearch && matchCategory && matchBrand && matchPrice;
   });
 
@@ -119,8 +114,8 @@ const Catalogo: React.FC = () => {
   };
 
   // Listas únicas de categorías y marcas
-  const categoryOptions = Array.from(new Set(products.map((p) => p.category))).filter(Boolean);
-  const brandOptions = Array.from(new Set(products.map((p) => p.brand))).filter(Boolean);
+  const categoryOptions = Array.from(new Set(products.map(p => p.category))).filter(Boolean);
+  const brandOptions = Array.from(new Set(products.map(p => p.brand))).filter(Boolean);
 
   return (
     <div>
@@ -130,9 +125,9 @@ const Catalogo: React.FC = () => {
         {/* Título principal */}
         <h1 className="text-4xl font-bold text-gray-800 capitalize mb-6">Catálogo</h1>
 
-        {/* Fila con Buscador, Botón Categoría, Botón Filtros */}
+        {/* Fila de Buscador, Categoría y Filtros */}
         <div className="flex items-center space-x-4 mb-6">
-          {/* Buscador con icono */}
+          {/* Buscador */}
           <div className="relative flex-1">
             <FaSearch className="absolute top-2 left-2 text-gray-400" />
             <input
@@ -144,7 +139,7 @@ const Catalogo: React.FC = () => {
             />
           </div>
 
-          {/* BOTÓN CATEGORÍA */}
+          {/* Botón de Categoría */}
           <div className="relative">
             <button
               onClick={() => {
@@ -155,10 +150,9 @@ const Catalogo: React.FC = () => {
             >
               <FaTh className="inline mr-2" /> Categoría
             </button>
-
             {showCategoryMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-10">
-                {categoryOptions.map((cat) => (
+                {categoryOptions.map(cat => (
                   <button
                     key={cat}
                     onClick={() => handleCategoryClick(cat)}
@@ -183,7 +177,7 @@ const Catalogo: React.FC = () => {
             )}
           </div>
 
-          {/* BOTÓN FILTROS */}
+          {/* Botón de Filtros */}
           <div className="relative">
             <button
               onClick={() => {
@@ -194,7 +188,6 @@ const Catalogo: React.FC = () => {
             >
               <FaFilter className="inline mr-2" /> Filtros
             </button>
-
             {showFilterMenu && (
               <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded shadow-lg p-4 z-10">
                 <div className="mb-4">
@@ -205,14 +198,13 @@ const Catalogo: React.FC = () => {
                     className="w-full p-2 border border-gray-300 rounded-lg"
                   >
                     <option value="">Todas</option>
-                    {brandOptions.map((brand) => (
+                    {brandOptions.map(brand => (
                       <option key={brand} value={brand}>
                         {brand}
                       </option>
                     ))}
                   </select>
                 </div>
-
                 <div className="mb-4">
                   <label className="block mb-1 font-semibold text-sm">Precio mínimo</label>
                   <input
@@ -223,7 +215,6 @@ const Catalogo: React.FC = () => {
                     className="w-full p-2 border border-gray-300 rounded-lg"
                   />
                 </div>
-
                 <div>
                   <label className="block mb-1 font-semibold text-sm">Precio máximo</label>
                   <input
@@ -239,7 +230,7 @@ const Catalogo: React.FC = () => {
           </div>
         </div>
 
-        {/* Vista de carga mejorada */}
+        {/* Vista de carga */}
         {loading ? (
           <div className="flex flex-col justify-center items-center min-h-[400px]">
             <FaSpinner className="animate-spin text-6xl text-blue-500 mb-4" />
@@ -247,13 +238,13 @@ const Catalogo: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* GRID DE PRODUCTOS con transición */}
+            {/* Grid de productos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all">
               {currentProducts.length > 0 ? (
-                currentProducts.map((product) => (
-                  <Link 
-                    to={`/products/${encodeURIComponent(product.name)}`} 
-                    key={product.name} // Si cuentas con un id, reemplázalo aquí.
+                currentProducts.map(product => (
+                  <Link
+                    to={`/products/${encodeURIComponent(product.name)}`}
+                    key={product.name}
                     className="block no-underline focus:outline-none"
                   >
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col transform transition duration-300 hover:scale-105">
@@ -290,7 +281,7 @@ const Catalogo: React.FC = () => {
               )}
             </div>
 
-            {/* PAGINACIÓN */}
+            {/* Paginación */}
             {totalPages > 1 && (
               <div className="flex justify-center mt-6 items-center">
                 <button
