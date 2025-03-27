@@ -36,14 +36,16 @@ const Catalogo: React.FC = () => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const data = await getProducts();
+        const data = (await getProducts()) as Product[]; // Aseguramos el tipo
         console.log(data); // Verifica la data en la consola
         // Compara en minúsculas para evitar problemas de mayúsculas/minúsculas
         const productoPrincipal = data.find(
           product => product.name.toLowerCase() === 'ventana_automatizada'
         );
         if (productoPrincipal) {
-          const resto = data.filter(product => product.name.toLowerCase() !== 'ventana_automatizada');
+          const resto = data.filter(
+            product => product.name.toLowerCase() !== 'ventana_automatizada'
+          );
           setProducts([productoPrincipal, ...resto]);
         } else {
           setProducts(data);
@@ -56,6 +58,7 @@ const Catalogo: React.FC = () => {
     }
     fetchProducts();
   }, []);
+  
   
 
   // Manejadores de cambios
