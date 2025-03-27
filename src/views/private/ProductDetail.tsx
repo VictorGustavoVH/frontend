@@ -1,4 +1,3 @@
-// src/views/private/ProductDetail.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
@@ -49,10 +48,15 @@ const ProductDetail: React.FC = () => {
 
   const handleBuyNow = () => {
     if (!product) return;
-    addToCart(product); // Se añade el producto al carrito, si es que aún no está
-    // Aquí podrías redirigir al proceso de pago o checkout
-    alert(`Has comprado el producto "${product.name}".`);
-    // Ejemplo: navigate('/checkout');
+    // Verifica si el producto es el principal "ventana_automatizada"
+    if (product.name.toLowerCase() === 'ventana_automatizada') {
+      // Redirige a la pantalla de gestión de productos
+      navigate('/manage-products'); // Cambia '/manage-products' por la ruta que corresponda en tu proyecto
+    } else {
+      addToCart(product); // Agrega el producto al carrito
+      // Aquí podrías continuar con el flujo normal de compra, por ejemplo, redirigiendo al checkout
+      navigate('/checkout'); // O muestra otro flujo según tu lógica
+    }
   };
 
   const handleViewCart = () => {

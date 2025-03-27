@@ -24,6 +24,7 @@ import ProductCrud from './views/private/ProductCrud';
 import Pagina from './views/private/GestionPagina';
 import ContactoView from './views/public/ContactoView';
 import TerminosView from './views/public/TerminosView';
+import ManageProducts from './views/public/ManageProducts';
 
 export default function Router() {
   return (
@@ -74,6 +75,8 @@ export default function Router() {
           <Route path="/perfil" element={<UpdateProfile />} />
           <Route path="/contacto" element={<ContactoView />} />
           <Route path="/terminos" element={<TerminosView />} />
+          <Route path="/devices/register" element={<ManageProducts />} />
+
           {/* Página 404 */}
           <Route path="/404" element={<AuthLayout />}>
             <Route index element={<NotFoundView />} />
