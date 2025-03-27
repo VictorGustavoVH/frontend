@@ -75,7 +75,7 @@ export default function Router() {
           <Route path="/perfil" element={<UpdateProfile />} />
           <Route path="/contacto" element={<ContactoView />} />
           <Route path="/terminos" element={<TerminosView />} />
-          <Route path="/devices/register" element={<ManageProducts />} />
+          <Route path="/manage-products" element={<ManageProducts />} />
 
           {/* Página 404 */}
           <Route path="/404" element={<AuthLayout />}>
