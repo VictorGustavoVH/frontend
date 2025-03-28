@@ -21,8 +21,21 @@ const PreguntasFrecuentes: React.FC = () => {
         // Si el campo preguntasFrecuentes viene vacío, se usa un array vacío.
         const faqString = res.data.preguntasFrecuentes || "[]";
         try {
-          const parsedFaq: FAQSection[] = JSON.parse(faqString);
-          setSections(parsedFaq);
+          const parsedFaq = JSON.parse(faqString);
+          // Si los objetos tienen la propiedad "question", transformamos al formato esperado
+          if (parsedFaq.length > 0 && parsedFaq[0].question !== undefined) {
+            const transformed: FAQSection[] = parsedFaq.map((faq: any, index: number) => ({
+              id: `${index}`,
+              title: faq.question,
+              description: '', // Puedes asignar una descripción por defecto si lo deseas
+              icon: '❓',      // Ícono por defecto o podrías elegir otro
+              content: faq.answer,
+            }));
+            setSections(transformed);
+          } else {
+            // Si ya está en el formato esperado, se usa directamente
+            setSections(parsedFaq);
+          }
         } catch (error) {
           console.error('Error al parsear el contenido de FAQ:', error);
         }
