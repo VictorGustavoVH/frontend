@@ -35,7 +35,15 @@ const Login: React.FC = () => {
       setShowSuccessModal(true);
     } catch (error: any) {
       if (isAxiosError(error) && error.response) {
-        toast.error(error.response.data.error);
+        const { status, data } = error.response;
+        // Validación por estado HTTP para mostrar mensajes personalizados
+        if (status === 404) {
+          toast.error("No existe una cuenta asociada a este correo.");
+        } else if (status === 401) {
+          toast.error("Contraseña incorrecta. Por favor, inténtalo de nuevo.");
+        } else {
+          toast.error(data.error || "Error al iniciar sesión. Inténtalo de nuevo.");
+        }
       } else {
         toast.error('Error al iniciar sesión. Inténtalo de nuevo.');
       }

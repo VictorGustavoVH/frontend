@@ -44,14 +44,36 @@ const ProductCrud: React.FC = () => {
     }
   };
 
-  // Actualizar producto
+  // Actualizar producto con validaciones
   const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!editProduct._id) {
+      toast.error('No hay producto seleccionado');
+      return;
+    }
+    if (!editProduct.name || editProduct.name.trim() === '') {
+      toast.error('El nombre es requerido');
+      return;
+    }
+    if (!editProduct.description || editProduct.description.trim() === '') {
+      toast.error('La descripción es requerida');
+      return;
+    }
+    if (!editProduct.category || editProduct.category.trim() === '') {
+      toast.error('La categoría es requerida');
+      return;
+    }
+    if (!editProduct.brand || editProduct.brand.trim() === '') {
+      toast.error('La marca es requerida');
+      return;
+    }
+    if (editProduct.price == null || editProduct.price < 0) {
+      toast.error('El precio debe ser mayor o igual a 0');
+      return;
+    }
+
     try {
-      if (!editProduct._id) {
-        toast.error('No hay producto seleccionado');
-        return;
-      }
       const { image, ...fields } = editProduct;
       await apiUpdateProduct(editProduct._id, fields);
       if (editImageFile) {
@@ -292,6 +314,7 @@ const ProductCrud: React.FC = () => {
                   onChange={(e) =>
                     setEditProduct({ ...editProduct, brand: e.target.value })
                   }
+                  required
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -306,6 +329,7 @@ const ProductCrud: React.FC = () => {
                   onChange={(e) =>
                     setEditProduct({ ...editProduct, price: Number(e.target.value) })
                   }
+                  required
                   className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

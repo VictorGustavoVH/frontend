@@ -1,10 +1,21 @@
-//component/protectedRoute
-import { Navigate, Outlet } from 'react-router-dom';
+import  { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
 
-const ProtectedRoute = () => {
-  const token = localStorage.getItem('AUTH_TOKEN');
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const authContext = useContext(AuthContext);
 
-  return token ? <Outlet /> : <Navigate to="/login" />;
+  // Si por alguna razón no se carga el contexto, se redirige a login
+  if (!authContext) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Si el role es "visitor", consideramos que el usuario no está autenticado
+  if (authContext.role === "visitor") {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

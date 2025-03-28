@@ -35,44 +35,45 @@ export default function Router() {
           <Route path="/login" element={<LoginView />} />
           <Route path="/register" element={<RegisterView />} />
 
-          {/* Rutas del panel de administración */}
-          <Route path="/admin" element={<ProtectedRoute />}>
+          {/* Rutas protegidas */}
+          <Route element={<ProtectedRoute />}>
+            {/* Layout para rutas autenticadas */}
             <Route element={<AppLayout />}>
-              <Route index element={<LinkTreeView />} />
-              <Route
-                path="product/GestionProductos/Register"
-                element={<RegisterProduct />}
-              />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="product/GestionProductos" element={<ProductCrud />} />
-              <Route path="pagina" element={<Pagina />} />
+              {/* Panel de administración */}
+              <Route path="/admin">
+                <Route index element={<LinkTreeView />} />
+                <Route
+                  path="product/GestionProductos/Register"
+                  element={<RegisterProduct />}
+                />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="product/GestionProductos" element={<ProductCrud />} />
+                <Route path="pagina" element={<Pagina />} />
+              </Route>
+
+              {/* Dispositivo */}
+              <Route path="/mi-dispositivo">
+                <Route index element={<SmartViewDashboard />} />
+              </Route>
+
+              {/* Otras rutas protegidas */}
+              <Route path="/products/:name" element={<ProductDetail />} />
+              <Route path="/cart" element={<CartView />} />
+              <Route path="/perfil" element={<UpdateProfile />} />
+              <Route path="/manage-products" element={<ManageProducts />} />
+              <Route path="/devices/register" element={<RegisterDeviceView />} />
             </Route>
           </Route>
-
-          {/* Ruta protegida para el dashboard del dispositivo */}
-          <Route path="/mi-dispositivo" element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route index element={<SmartViewDashboard />} />
-            </Route>
-          </Route>
-
-          {/* Ruta protegida para registrar dispositivo */}
-          <Route path="/devices/register" element={<RegisterDeviceView />} />
-            
 
           {/* Rutas públicas */}
           <Route path="/" element={<HomeView />} />
           <Route path="/products" element={<Catalogo />} />
-          <Route path="/products/:name" element={<ProductDetail />} />
-          <Route path="/cart" element={<CartView />} />
           <Route path="/preguntasFrecuentes" element={<PreguntasFrecuente />} />
           <Route path="/quienes-somos" element={<BodyContent />} />
           <Route path="/contenido" element={<BodyContent />} />
           <Route path="/inicio" element={<Inicio />} />
-          <Route path="/perfil" element={<UpdateProfile />} />
           <Route path="/contacto" element={<ContactoView />} />
           <Route path="/terminos" element={<TerminosView />} />
-          <Route path="/manage-products" element={<ManageProducts />} />
 
           {/* Página 404 */}
           <Route path="/404" element={<AuthLayout />}>
