@@ -95,7 +95,8 @@ const EditSectionModal: React.FC<{
 
           {section === 'faq' && (
             <div>
-              <div className="space-y-4">
+              {/* Contenedor con máximo alto y scroll para evitar desbordamiento */}
+              <div className="max-h-80 overflow-y-auto space-y-4">
                 {fields.map((item, index) => (
                   <div key={item.id} className="border p-4 rounded relative">
                     <div>
@@ -215,7 +216,7 @@ const GestionPagina: React.FC = () => {
 
   const onSubmit = async (data: PageContent) => {
     try {
-      // Se puede convertir el array de FAQs a JSON si es necesario para el backend
+      // Convertimos el array de FAQs a JSON para enviarlo al backend
       const payload = {
         ...data,
         preguntasFrecuentes: JSON.stringify(data.preguntasFrecuentes)
