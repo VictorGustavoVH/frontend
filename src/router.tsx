@@ -1,4 +1,4 @@
-// src/Router.tsx (o donde administres tus rutas)
+// src/Router.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './contexts/CartContext';
 import LoginView from './views/public/Login';
