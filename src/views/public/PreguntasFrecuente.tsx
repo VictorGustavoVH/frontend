@@ -18,30 +18,47 @@ const PreguntasFrecuentes: React.FC = () => {
   useEffect(() => {
     api.get('/pagina/contenido')
       .then(res => {
-        // Si el campo preguntasFrecuentes viene vacío, se usa un array vacío.
+        // Si no hay contenido, usamos "[]"
         const faqString = res.data.preguntasFrecuentes || "[]";
+        console.log("FAQ string recibido:", faqString);
+        let parsedFaq: any[] = [];
         try {
-          const parsedFaq = JSON.parse(faqString);
-          // Si los objetos tienen la propiedad "question", transformamos al formato esperado
-          if (parsedFaq.length > 0 && parsedFaq[0].question !== undefined) {
-            const transformed: FAQSection[] = parsedFaq.map((faq: any, index: number) => ({
-              id: `${index}`,
-              title: faq.question,
-              description: '', // Puedes asignar una descripción por defecto si lo deseas
-              icon: '❓',      // Ícono por defecto o podrías elegir otro
-              content: faq.answer,
-            }));
-            setSections(transformed);
-          } else {
-            // Si ya está en el formato esperado, se usa directamente
-            setSections(parsedFaq);
-          }
+          parsedFaq = JSON.parse(faqString);
+          console.log("FAQ parseadas:", parsedFaq);
         } catch (error) {
-          console.error('Error al parsear el contenido de FAQ:', error);
+          console.error("Error al parsear el JSON de FAQs:", error);
         }
+        // Transformamos cada objeto para adaptarlo al formato esperado
+        const transformed = parsedFaq
+          .map((faq, index) => {
+            // Si ya tiene 'title', asumimos que está en el formato nuevo
+            if (faq.title !== undefined) {
+              return {
+                id: faq.id ? faq.id : String(index),
+                title: faq.title,
+                description: faq.description || "",
+                icon: faq.icon || "❓",
+                content: faq.content || "",
+              };
+            }
+            // Si no tiene 'title' pero sí 'question', transformamos del formato antiguo
+            else if (faq.question !== undefined) {
+              return {
+                id: String(index),
+                title: faq.question,
+                description: "",
+                icon: "❓",
+                content: faq.answer,
+              };
+            }
+            return null;
+          })
+          .filter(faq => faq !== null) as FAQSection[];
+
+        setSections(transformed);
       })
       .catch(err => {
-        console.error('Error al obtener el contenido de la página:', err);
+        console.error("Error al obtener el contenido de la página:", err);
       });
   }, []);
 
@@ -58,33 +75,34 @@ const PreguntasFrecuentes: React.FC = () => {
           <p className="subtitle">Selecciona una categoría para ver la documentación</p>
         </div>
         <div className="sectionsContainer">
-          {sections.map((section) => (
-            <div key={section.id} className="sectionItem">
-              <div
-                className="sectionContent"
-                onClick={() => handleSectionClick(section.id)}
-              >
-                <div className="iconContainer">
-                  <span>{section.icon}</span>
+          {sections.length === 0 ? (
+            <p>No hay preguntas disponibles</p>
+          ) : (
+            sections.map(section => (
+              <div key={section.id} className="sectionItem">
+                <div className="sectionContent" onClick={() => handleSectionClick(section.id)}>
+                  <div className="iconContainer">
+                    <span>{section.icon}</span>
+                  </div>
+                  <div className="textContainer">
+                    <h3 className="sectionTitle">{section.title}</h3>
+                    <p className="sectionDescription">{section.description}</p>
+                  </div>
                 </div>
-                <div className="textContainer">
-                  <h3 className="sectionTitle">{section.title}</h3>
-                  <p className="sectionDescription">{section.description}</p>
-                </div>
+                <span
+                  className={`arrowIcon ${expandedSection === section.id ? 'expanded' : ''}`}
+                  onClick={() => handleSectionClick(section.id)}
+                >
+                  ➡️
+                </span>
+                {expandedSection === section.id && (
+                  <div className="sectionContentExpand">
+                    <div dangerouslySetInnerHTML={{ __html: section.content }} />
+                  </div>
+                )}
               </div>
-              <span
-                className={`arrowIcon ${expandedSection === section.id ? 'expanded' : ''}`}
-                onClick={() => handleSectionClick(section.id)}
-              >
-                ➡️
-              </span>
-              {expandedSection === section.id && (
-                <div className="sectionContentExpand">
-                  <div dangerouslySetInnerHTML={{ __html: section.content }} />
-                </div>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
       <Footer />
