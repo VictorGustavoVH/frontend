@@ -1,5 +1,6 @@
 // src/Router.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner'; // Asegúrate de importar Toaster
 import { CartProvider } from './contexts/CartContext';
 import LoginView from './views/public/Login';
 import RegisterView from './views/public/Register';
@@ -30,6 +31,7 @@ export default function Router() {
   return (
     <CartProvider>
       <BrowserRouter>
+        <Toaster /> {/* Componente contenedor para los toasts */}
         <Routes>
           {/* Rutas de autenticación */}
           <Route path="/login" element={<LoginView />} />
