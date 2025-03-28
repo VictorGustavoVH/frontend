@@ -1,5 +1,5 @@
-// src/contexts/AuthContext.tsx
-import React, { createContext, useState, useEffect } from "react";
+//contexts
+import { createContext, useState, useEffect } from "react";
 
 interface AuthContextType {
   role: string;
