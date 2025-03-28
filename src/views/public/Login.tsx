@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import React, { useState, useEffect } from 'react'; 
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
@@ -52,6 +52,17 @@ const Login: React.FC = () => {
     }
   };
 
+  // Función para manejar errores de validación del formulario
+  const onError: SubmitErrorHandler<LoginForm> = (errors) => {
+    // Puedes mostrar cada error con un toast
+    Object.keys(errors).forEach((field) => {
+      const key = field as keyof LoginForm;
+      if (errors[key]?.message) {
+        toast.error(errors[key]?.message as string);
+      }
+    });
+  };
+
   useEffect(() => {
     if (showSuccessModal) {
       const timer = setTimeout(() => {
@@ -74,7 +85,11 @@ const Login: React.FC = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Iniciar sesión en tu cuenta
             </h1>
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <form 
+              className="space-y-4 md:space-y-6" 
+              onSubmit={handleSubmit(onSubmit, onError)} 
+              noValidate
+            >
               <div>
                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Tu correo electrónico
